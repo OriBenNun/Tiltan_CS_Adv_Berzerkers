@@ -1,54 +1,61 @@
 ﻿using System;
 
-namespace Tiltan_CS_Adv_Assignment_Berzerkers
+namespace Tiltan_CS_Adv_Assignment_Berzerkers;
+
+public abstract class Unit
 {
-    public abstract class Unit
+    protected virtual string UnitName { get; set; } = "Unit";
+    protected abstract Race Race { get; set; }
+    protected virtual int Hp { get; set; } = 100;
+    protected virtual int Damage { get; set; } = 1;
+    public virtual int Defense { get; set; } = 1;
+
+    public virtual void Attack(Unit target) => target.Defend(this);
+
+    protected virtual void Defend(Unit attacker)
     {
-        public virtual string Name { get; protected set; } = "Unit";
-        public virtual int Hp { get; protected set; } = 100;
-        public virtual int Damage { get; protected set; } = 1;
+        var attackerDamage = attacker.Damage;
 
-        public virtual void Attack(Unit target) => target.Defend(this);
-        public virtual void Defend(Unit attacker) => TakeDamage(attacker.Damage);
-
-        private void TakeDamage(int damageToTake)
+        if (attackerDamage < Defense)
         {
-            Hp = Math.Max(0, Hp - damageToTake);
-            if (Hp > 0) return;
-            
-            Die();
+            Console.WriteLine($"{UnitName} blocked {attacker.UnitName}'s attack!");
+            return;
         }
 
-        private void Die()
-        {
-            Console.WriteLine($"Unit named: '{Name}' is dead!");
-        }
-
-        public override string ToString()
-        {
-            return $"Unit Stats:\n" +
-                   $"Hp: {Hp}\n" +
-                   $"Damage: {Damage}\n";
-        }
+        TakeDamage(attacker.Damage);
     }
 
-    public sealed class MeleeUnit : Unit
+    private void TakeDamage(int damageToTake)
     {
-        public MeleeUnit()
-        {
-            Name = "Melee Unit";
-            Hp = 120;
-            Damage = 3;
-        }
-        public int WeaponBonusModifier { get; set; } = 5;
-
-        public override string ToString()
-        {
-            return base.ToString() +
-                   $"Melee Unit Stats:\n" +
-                   $"Weapon Bonus Modifier: {WeaponBonusModifier}\n";
-        }
-
-        public override int Damage => base.Damage + WeaponBonusModifier;
+        Hp = Math.Max(0, Hp - damageToTake);
+        
+        Console.WriteLine($"{UnitName} received {damageToTake} damage!\n" +
+                          $"It has now {Hp} HP");
+        
+        if (Hp > 0) return;
+        
+        Die();
     }
+
+    private void Die()
+    {
+        Console.WriteLine($"{UnitName} is dead!");
+    }
+
+    public override string ToString()
+    {
+        return $"Unit Stats:\n" +
+               $"Unit Name: {UnitName}\n" +
+               $"Race: {Race}\n" +
+               $"Hp: {Hp}\n" +
+               $"Defense: {Defense}\n" +
+               $"Damage: {Damage}\n";
+    }
+}
+
+public enum Race
+{
+    Human,
+    Gnome,
+    Elf
 }
