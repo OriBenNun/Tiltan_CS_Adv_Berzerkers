@@ -11,9 +11,9 @@ namespace Tiltan_CS_Adv_Assignment_Berzerkers
 
         private static void Test()
         {
-            var v = new MeleeUnit { WeaponBonusModifier = 6};
-
-            Console.WriteLine(v.ToString());
+            // var v = new MeleeUnit { WeaponBonusModifier = 6};
+            //
+            // Console.WriteLine(v.ToString());
         }
     }
 }
