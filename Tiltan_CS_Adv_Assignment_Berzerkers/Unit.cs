@@ -10,7 +10,7 @@ public abstract class Unit
     protected virtual int Damage { get; set; } = 1;
     public virtual int Defense { get; set; } = 1;
 
-    public virtual void Attack(Unit target) => target.Defend(this);
+    protected virtual void Attack(Unit target) => target.Defend(this);
 
     protected virtual void Defend(Unit attacker)
     {

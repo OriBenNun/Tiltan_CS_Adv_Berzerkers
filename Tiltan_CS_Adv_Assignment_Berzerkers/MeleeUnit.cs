@@ -2,12 +2,12 @@
 
 public abstract class MeleeUnit : Unit
 {
-    public int ShieldBonusModifier { get; set; } = 1;
-    public int WeaponBonusModifier { get; set; } = 2;
+    private int WeaponBonusModifier { get; set; } = 2;
+    private int ShieldBonusModifier { get; set; } = 1;
     public override int Defense => base.Defense + ShieldBonusModifier;
     protected override int Damage => base.Damage + WeaponBonusModifier;
 
-    public override void Attack(Unit target)
+    protected override void Attack(Unit target)
     {
         base.Attack(target);
 
@@ -25,7 +25,7 @@ public abstract class MeleeUnit : Unit
     public override string ToString()
     {
         return base.ToString() +
-               $"Melee Unit Stats:\n" +
+               "Melee Unit Stats:\n" +
                $"Weapon Bonus Modifier: {WeaponBonusModifier}\n" +
                $"Shield Bonus Modifier: {ShieldBonusModifier}\n";
     }

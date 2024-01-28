@@ -43,6 +43,7 @@
         <Compile Include="MeleeUnit.cs" />
         <Compile Include="Program.cs" />
         <Compile Include="Properties\AssemblyInfo.cs" />
+        <Compile Include="RangedUnit.cs" />
         <Compile Include="Unit.cs" />
     </ItemGroup>
     <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
