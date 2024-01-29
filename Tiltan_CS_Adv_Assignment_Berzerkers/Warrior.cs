@@ -1,11 +1,11 @@
 ﻿namespace Tiltan_CS_Adv_Assignment_Berzerkers
 {
-    public abstract class TankUnit : Unit
+    public abstract class Warrior : Unit
     {
-        public int ShieldBonusModifier { get; set; } = 1;
-        public int WeaponBonusModifier { get; set; } = 2;
+        protected int ShieldBonusModifier { get; set; } = 1;
+        protected int WeaponBonusModifier { get; set; } = 2;
         public override int Defense => base.Defense + ShieldBonusModifier;
-        protected override int Damage => base.Damage + WeaponBonusModifier;
+        public override int Damage => base.Damage + WeaponBonusModifier;
 
         public override void Attack(Unit target)
         {
