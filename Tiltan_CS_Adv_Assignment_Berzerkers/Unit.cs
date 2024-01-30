@@ -5,10 +5,16 @@ namespace Tiltan_CS_Adv_Assignment_Berzerkers
     public abstract class Unit
     {
         protected virtual string UnitName { get; set; } = "Unit";
-        protected abstract Race Race { get; set; }
         protected virtual int Hp { get; set; } = 100;
         public virtual int Damage { get; protected set; } = 1;
         public virtual int Defense { get; protected set; } = 1;
+        protected Race Race { get; }
+
+        protected Unit(Race race)
+        {
+            Race = race;
+        }
+
 
         public virtual void Attack(Unit target) => target.Defend(this);
 
