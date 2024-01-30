@@ -2,11 +2,10 @@ namespace Tiltan_CS_Adv_Assignment_Berzerkers
 {
     public abstract class Siege : Unit
     {
-
         // Double HP
         protected override int Hp => base.Hp * 2;
         
-        // Double attacks if has more damage than the target
+        // Double attack if has more damage than the target
         public override void Attack(Unit target)
         {
             base.Attack(target);
@@ -15,5 +14,7 @@ namespace Tiltan_CS_Adv_Assignment_Berzerkers
             
             base.Attack(target);
         }
+
+        protected Siege(Race race) : base(race) {}
     }
 }

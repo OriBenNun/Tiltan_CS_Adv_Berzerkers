@@ -11,10 +11,9 @@
         {
             base.Attack(target);
 
-            if (Defense > target.Defense)
-            {
-                ShieldAttack(target);
-            }
+            if (Defense <= target.Defense) { return; }
+            
+            ShieldAttack(target);
         }
 
         private void ShieldAttack(Unit target)
