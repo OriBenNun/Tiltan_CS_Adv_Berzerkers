@@ -1,61 +1,68 @@
 ﻿using System;
 
-namespace Tiltan_CS_Adv_Assignment_Berzerkers;
-
-public abstract class Unit
+namespace Tiltan_CS_Adv_Assignment_Berzerkers
 {
-    protected virtual string UnitName { get; set; } = "Unit";
-    protected abstract Race Race { get; set; }
-    protected virtual int Hp { get; set; } = 100;
-    protected virtual int Damage { get; set; } = 1;
-    public virtual int Defense { get; set; } = 1;
-
-    protected virtual void Attack(Unit target) => target.Defend(this);
-
-    protected virtual void Defend(Unit attacker)
+    public abstract class Unit
     {
-        var attackerDamage = attacker.Damage;
+        protected virtual string UnitName { get; set; } = "Unit";
+        protected virtual int Hp { get; set; } = 100;
+        public virtual int Damage { get; protected set; } = 1;
+        public virtual int Defense { get; protected set; } = 1;
+        protected Race Race { get; }
 
-        if (attackerDamage < Defense)
+        protected Unit(Race race)
         {
-            Console.WriteLine($"{UnitName} blocked {attacker.UnitName}'s attack!");
-            return;
+            Race = race;
         }
 
-        TakeDamage(attacker.Damage);
-    }
 
-    private void TakeDamage(int damageToTake)
-    {
-        Hp = Math.Max(0, Hp - damageToTake);
+        public virtual void Attack(Unit target) => target.Defend(this);
+
+        protected virtual void Defend(Unit attacker)
+        {
+            var attackerDamage = attacker.Damage;
+
+            if (attackerDamage < Defense)
+            {
+                Console.WriteLine($"{UnitName} blocked {attacker.UnitName}'s attack!");
+                return;
+            }
+
+            TakeDamage(attacker.Damage);
+        }
+
+        private void TakeDamage(int damageToTake)
+        {
+            Hp = Math.Max(0, Hp - damageToTake);
         
-        Console.WriteLine($"{UnitName} received {damageToTake} damage!\n" +
-                          $"It has now {Hp} HP");
+            Console.WriteLine($"{UnitName} received {damageToTake} damage!\n" +
+                              $"It has now {Hp} HP");
         
-        if (Hp > 0) return;
+            if (Hp > 0) return;
         
-        Die();
+            Die();
+        }
+
+        private void Die()
+        {
+            Console.WriteLine($"{UnitName} is dead!");
+        }
+
+        public override string ToString()
+        {
+            return $"Unit Stats:\n" +
+                   $"Unit Name: {UnitName}\n" +
+                   $"Race: {Race}\n" +
+                   $"Hp: {Hp}\n" +
+                   $"Defense: {Defense}\n" +
+                   $"Damage: {Damage}\n";
+        }
     }
 
-    private void Die()
+    public enum Race
     {
-        Console.WriteLine($"{UnitName} is dead!");
+        Human,
+        Gnome,
+        Elf
     }
-
-    public override string ToString()
-    {
-        return $"Unit Stats:\n" +
-               $"Unit Name: {UnitName}\n" +
-               $"Race: {Race}\n" +
-               $"Hp: {Hp}\n" +
-               $"Defense: {Defense}\n" +
-               $"Damage: {Damage}\n";
-    }
-}
-
-public enum Race
-{
-    Human,
-    Gnome,
-    Elf
 }
