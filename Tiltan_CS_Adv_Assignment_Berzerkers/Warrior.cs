@@ -2,17 +2,26 @@
 {
     public abstract class Warrior : Unit
     {
-        protected int ShieldBonusModifier { get; set; } = 1;
-        protected int WeaponBonusModifier { get; set; } = 2;
+        private int ShieldBonusModifier { get; }
+        private int WeaponBonusModifier { get; }
         public override int Defense => base.Defense + ShieldBonusModifier;
         public override int Damage => base.Damage + WeaponBonusModifier;
 
-        public override void Attack(Unit target)
+        protected Warrior(Race race, int shieldBonusModifier, int weaponBonusModifier) : base(race)
+        {
+            ShieldBonusModifier = shieldBonusModifier;
+            WeaponBonusModifier = weaponBonusModifier;
+        }
+
+        protected override void Attack(Unit target)
         {
             base.Attack(target);
 
-            if (Defense <= target.Defense) { return; }
-            
+            if (Defense <= target.Defense)
+            {
+                return;
+            }
+
             ShieldAttack(target);
         }
 
@@ -27,6 +36,17 @@
                    $"Melee Unit Stats:\n" +
                    $"Weapon Bonus Modifier: {WeaponBonusModifier}\n" +
                    $"Shield Bonus Modifier: {ShieldBonusModifier}\n";
+        }
+    }
+
+    public sealed class Barbarian : Warrior
+    {
+        public Barbarian(int hp = 130, int damage = 2, int defense = 1) : base(race: Race.Human, shieldBonusModifier: 0,
+            weaponBonusModifier: 1)
+        {
+            Hp = hp;
+            Damage = damage;
+            Defense = defense;
         }
     }
 }

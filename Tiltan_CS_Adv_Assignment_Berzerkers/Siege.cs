@@ -6,7 +6,7 @@ namespace Tiltan_CS_Adv_Assignment_Berzerkers
         protected override int Hp => base.Hp * 2;
         
         // Double attack if has more damage than the target
-        public override void Attack(Unit target)
+        protected override void Attack(Unit target)
         {
             base.Attack(target);
 

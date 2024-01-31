@@ -8,7 +8,7 @@ namespace Tiltan_CS_Adv_Assignment_Berzerkers
         protected virtual int Hp { get; set; } = 100;
         public virtual int Damage { get; protected set; } = 1;
         public virtual int Defense { get; protected set; } = 1;
-        protected Race Race { get; }
+        private Race Race { get; }
 
         protected Unit(Race race)
         {
@@ -16,7 +16,7 @@ namespace Tiltan_CS_Adv_Assignment_Berzerkers
         }
 
 
-        public virtual void Attack(Unit target) => target.Defend(this);
+        protected virtual void Attack(Unit target) => target.Defend(this);
 
         protected virtual void Defend(Unit attacker)
         {
