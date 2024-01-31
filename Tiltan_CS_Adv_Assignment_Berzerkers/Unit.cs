@@ -24,11 +24,16 @@ namespace Tiltan_CS_Adv_Assignment_Berzerkers
 
             if (attackerDamage < Defense)
             {
-                Console.WriteLine($"{UnitName} blocked {attacker.UnitName}'s attack!");
+                BlockAttack(attacker);
                 return;
             }
 
             TakeDamage(attacker.Damage);
+        }
+
+        protected virtual void BlockAttack(Unit attacker)
+        {
+            Console.WriteLine($"{UnitName} blocked {attacker.UnitName}'s attack!");
         }
 
         private void TakeDamage(int damageToTake)
