@@ -127,9 +127,7 @@ public static class RandomChanceChecker
     public static bool DidChanceSucceed(int chancePercents)
     {
         var random = Random.Next(100);
-
-        Console.WriteLine($"Random number: {random}\n\n");
-
+        
         return random < chancePercents;
     }
 }
