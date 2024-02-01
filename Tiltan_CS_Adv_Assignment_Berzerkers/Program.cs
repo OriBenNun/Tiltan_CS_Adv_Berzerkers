@@ -11,9 +11,17 @@ namespace Tiltan_CS_Adv_Assignment_Berzerkers
 
         private static void Test()
         {
-            // var v = new Warrior { WeaponBonusModifier = 6};
-            //
-            // Console.WriteLine(v.ToString());
+            var g = new Giant();
+            var r = new Rebel();
+
+            Console.WriteLine(g);
+            Console.WriteLine(r);
+            
+            g.Attack(r);
+            r.Attack(g);
+            
+            Console.WriteLine(g);
+            Console.WriteLine(r);
         }
     }
 }

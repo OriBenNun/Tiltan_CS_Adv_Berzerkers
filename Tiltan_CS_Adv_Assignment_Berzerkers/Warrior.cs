@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Tiltan_CS_Adv_Assignment_Berzerkers;
+﻿namespace Tiltan_CS_Adv_Assignment_Berzerkers;
 
 public abstract class Warrior : Unit
 {
@@ -15,7 +13,7 @@ public abstract class Warrior : Unit
         WeaponBonusModifier = weaponBonusModifier;
     }
 
-    protected override void Attack(Unit target)
+    public override void Attack(Unit target)
     {
         base.Attack(target);
 
@@ -42,11 +40,13 @@ public abstract class Warrior : Unit
     }
 }
 
+// Barbarian => Human Warrior
 public sealed class Barbarian : Warrior
 {
     public Barbarian(int hp = 130, int damage = 3, int defense = 2) : base(race: Race.Human, shieldBonusModifier: 0,
         weaponBonusModifier: 1)
     {
+        UnitName = "Barbarian";
         Hp = hp;
         Damage = damage;
         Defense = defense;
@@ -58,7 +58,8 @@ public sealed class Barbarian : Warrior
         Attack(target);
     }
 }
-    
+
+// Knight => Human Warrior
 public sealed class Knight : Warrior
 {
 
@@ -67,26 +68,50 @@ public sealed class Knight : Warrior
     public Knight(int hp = 160, int damage = 2, int defense = 4) : base(race: Race.Human, shieldBonusModifier: 2,
         weaponBonusModifier: 0)
     {
+        UnitName = "Knight";
         Hp = hp;
         Damage = damage;
         Defense = defense;
     }
 
-    protected override void Attack(Unit target)
+    // Knight special ability => has 30% of making a horse attack as an extra attack
+    public override void Attack(Unit target)
     {
         base.Attack(target);
         
-        // Knight special ability => has 30% of making a horse attack as an extra attack
-
         HorseAttack(target);
     }
 
     private void HorseAttack(Unit target)
     {
-        var random = new Random().Next(0, 100);
-
-        if (random < HorseAttackChance) { return; }
+        if (!RandomChanceChecker.DidChanceSucceed(HorseAttackChance)) { return; }
         
         Attack(target);
+    }
+}
+
+// Rebel = Elf Warrior
+public sealed class Rebel : Warrior
+{
+
+    private const int CounterAttackChance = 50;
+    
+    public Rebel(int hp = 100, int damage = 2, int defense = 3) : base(race: Race.Elf, shieldBonusModifier: 2,
+        weaponBonusModifier: 2)
+    {
+        UnitName = "Rebel";
+        Hp = hp;
+        Damage = damage;
+        Defense = defense;
+    }
+    
+    // Rebel special ability => has 50% chance to counter attack every time they being attacked
+    protected override void Defend(Unit attacker)
+    {
+        base.Defend(attacker);
+        
+        if (!RandomChanceChecker.DidChanceSucceed(CounterAttackChance)) { return; }
+
+        Attack(attacker);
     }
 }
