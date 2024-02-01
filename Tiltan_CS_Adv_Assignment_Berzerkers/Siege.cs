@@ -1,21 +1,28 @@
+using System;
+
 namespace Tiltan_CS_Adv_Assignment_Berzerkers;
 
 public abstract class Siege : Unit
 {
-    // Double HP
-    protected override int Hp => base.Hp * 2;
-        
-    // Double attack if has more damage than the target
+    private const int ChanceToDoubleAttack = 65;
+
+    protected Siege(Race race) : base(race) { }
+
+    // Has 65% chance tp double attack if has more damage than the target
     public override void Attack(Unit target)
     {
         base.Attack(target);
 
-        if (Damage <= target.Damage) { return; }
-            
+        if (Damage <= target.Damage ||
+            !RandomChanceChecker.DidChanceSucceed(ChanceToDoubleAttack))
+        {
+            return;
+        }
+
+        Console.WriteLine($"{UnitName} (Siege) succeeded a double attack on {target.UnitName}!");
+        
         base.Attack(target);
     }
-
-    protected Siege(Race race) : base(race) {}
 }
 
 // Giant = Human Siege
@@ -33,11 +40,11 @@ public sealed class Giant : Siege
     protected override void BlockAttack(Unit attacker)
     {
         base.BlockAttack(attacker);
-        
+
         Attack(attacker);
     }
 }
-    
+
 // SoulBreaker = Gnome Siege
 public sealed class SoulBreaker : Siege
 {
@@ -57,7 +64,7 @@ public sealed class SoulBreaker : Siege
             BlockAttack(attacker);
             return;
         }
-            
+
         base.Defend(attacker);
     }
 }
