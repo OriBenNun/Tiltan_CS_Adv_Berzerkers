@@ -76,6 +76,8 @@ public abstract class Unit
             return;
         }
         
+        Console.WriteLine($"{UnitName} is attacking {target.UnitName}\n");
+        
         target.Defend(this);
     }
 
@@ -109,7 +111,7 @@ public abstract class Unit
         Hp = Math.Max(0, Hp - damageToTake);
 
         Console.WriteLine($"{UnitName} received {damageToTake} damage!\n" +
-                          $"It has now {Hp} HP");
+                          $"It has now {Hp} HP\n");
 
         if (Hp > 0) return;
 

@@ -34,10 +34,10 @@ public abstract class Warrior : Unit
             return;
         }
 
-        ShieldAttack(target);
+        WarriorShieldAttack(target);
     }
 
-    protected virtual void ShieldAttack(Unit target)
+    protected virtual void WarriorShieldAttack(Unit target)
     {
         // If the warrior has no shield, shield attack is canceled
         if (ShieldBonusModifier <= 0)
@@ -52,11 +52,11 @@ public abstract class Warrior : Unit
 // Barbarian => Human Warrior
 public sealed class Barbarian : Warrior
 {
-    public Barbarian(int hp = 130, int damage = 3, int defense = 2, string name = null) :
+    public Barbarian(int hp = 145, int damage = 3, int defense = 2, string name = null) :
         base(race: Race.Human,
             "Barbarian",
             shieldBonusModifier: 0,
-            weaponBonusModifier: 1)
+            weaponBonusModifier: 3)
     {
         UnitName = GetFixedName(name, ClassName);
         Hp = hp;
@@ -64,7 +64,7 @@ public sealed class Barbarian : Warrior
         Defense = defense;
     }
 
-    protected override void ShieldAttack(Unit target)
+    protected override void WarriorShieldAttack(Unit target)
     {
         // Barbarian special ability => can make a second attack even if they has no shield (modifier is 0)
         Attack(target);
@@ -80,7 +80,7 @@ public sealed class Knight : Warrior
         base(race: Race.Human,
         "Knight",
         shieldBonusModifier: 2,
-        weaponBonusModifier: 0)
+        weaponBonusModifier: 1)
     {
         UnitName = GetFixedName(name, ClassName);
         Hp = hp;
@@ -121,9 +121,9 @@ public sealed class Rebel : Warrior
 {
     private const int CounterAttackChance = 50;
 
-    public Rebel(int hp = 100, int damage = 2, int defense = 3, string name = null) :
+    public Rebel(int hp = 100, int damage = 4, int defense = 3, string name = null) :
         base(race: Race.Elf, "Knight", shieldBonusModifier: 2,
-            weaponBonusModifier: 2)
+            weaponBonusModifier: 1)
     {
         UnitName = GetFixedName(name, ClassName);
         Hp = hp;
@@ -160,7 +160,7 @@ public sealed class UnderTaker : Warrior
     private const int OneShotChance = 10;
 
     public UnderTaker(int hp = 150, int damage = 3, int defense = 3, string name = null) :
-        base(race: Race.Gnome, "UnderTaker", shieldBonusModifier: 0,
+        base(race: Race.Gnome, "UnderTaker", shieldBonusModifier: 1,
             weaponBonusModifier: 1)
     {
         UnitName = GetFixedName(name, ClassName);
@@ -191,8 +191,6 @@ public sealed class UnderTaker : Warrior
 
         // Resets the state
         if (!oneShotHit) return;
-
-        Console.WriteLine($"{UnitName} reset their damage after killing {target.UnitName}!\n");
         Damage = originalDamage;
     }
 }

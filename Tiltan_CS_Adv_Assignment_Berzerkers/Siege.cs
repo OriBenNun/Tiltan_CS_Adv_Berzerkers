@@ -26,6 +26,11 @@ public abstract class Siege : Unit
             return;
         }
 
+        SiegeDoubleAttack(target);
+    }
+
+    protected virtual void SiegeDoubleAttack(Unit target)
+    {
         Console.WriteLine($"{UnitName} (Siege) succeeded a double attack on {target.UnitName}!\n");
 
         base.Attack(target);
@@ -44,7 +49,6 @@ public sealed class Giant : Siege
     }
 
     // Giant special ability => counter attack upon successful block
-
     protected override void BlockAttack(Unit attacker)
     {
         base.BlockAttack(attacker);
@@ -56,7 +60,7 @@ public sealed class Giant : Siege
 // SoulBreaker = Gnome Siege
 public sealed class SoulBreaker : Siege
 {
-    public SoulBreaker(int hp = 130, int damage = 4, int defense = 2, string name = null) :
+    public SoulBreaker(int hp = 130, int damage = 5, int defense = 2, string name = null) :
         base(Race.Gnome,
             "SoulBreaker")
     {
@@ -115,8 +119,32 @@ public sealed class Tank : Siege
 
         // Resets the state
         if (!criticalHit) return;
-
-        Console.WriteLine($"{UnitName} reset their damage after critical hit\n");
         Damage /= CriticalDamageMultiplier;
+    }
+}
+
+// Paladin = Elf Siege
+public sealed class Paladin : Siege
+{
+    public Paladin(int hp = 175, int damage = 4, int defense = 3, string name = null) :
+        base(Race.Elf,
+            "Paladin")
+    {
+        UnitName = GetFixedName(name, ClassName);
+        Hp = hp;
+        Damage = damage;
+        Defense = defense;
+    }
+
+    // Paladin special ability => upon succeeding the Siege Double Attack - the second attack is doubled
+    protected override void SiegeDoubleAttack(Unit target)
+    {
+        Damage *= 2;
+        
+        Console.WriteLine($"{UnitName} is doubling their damage for the second attack!\n");
+        
+        base.SiegeDoubleAttack(target);
+        
+        Damage /= 2;
     }
 }
