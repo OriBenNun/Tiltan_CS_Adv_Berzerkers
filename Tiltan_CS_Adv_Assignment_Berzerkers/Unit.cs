@@ -9,8 +9,8 @@
 
 // Gnomes:
     // SoulBreaker => Gnome Siege
-// Tank => Gnome Siege
-// UnderTaker => Gnome Warrior
+    // Tank => Gnome Siege
+    // UnderTaker => Gnome Warrior
 
 // Elves:
 // Paladin => Elf Siege
@@ -24,12 +24,14 @@ public abstract class Unit
 {
     private const int ChanceToBlock = 50;
 
-    public string UnitName { get; set; } = "Unit";
+    public string UnitName { get; protected set; } = "Unit";
+    public virtual int Hp { get; protected set; } = 100;
     public virtual int Damage { get; protected set; } = 1;
     public virtual int Defense { get; protected set; } = 1;
-    private Race Race { get; }
-    protected virtual int Hp { get; set; } = 100;
     protected string ClassName { get; }
+    private Race Race { get; }
+
+    private bool _isDead;
 
     protected Unit(Race race, string className)
     {
@@ -67,12 +69,24 @@ public abstract class Unit
             Console.WriteLine($"{UnitName} tried to attack itself! aborting action.");
             return;
         }
+
+        if (_isDead)
+        {
+            Console.WriteLine($"{UnitName} tried to attack but they're dead! aborting action.");
+            return;
+        }
         
         target.Defend(this);
     }
 
     protected virtual void Defend(Unit attacker)
     {
+        if (_isDead)
+        {
+            Console.WriteLine($"{UnitName} tried to defend but they're dead! aborting action.");
+            return;
+        }
+        
         var attackerDamage = attacker.Damage;
 
         if (attackerDamage < Defense &&
@@ -105,6 +119,7 @@ public abstract class Unit
     private void Die()
     {
         Console.WriteLine($"{UnitName} is dead!\n");
+        _isDead = true;
     }
 }
 
