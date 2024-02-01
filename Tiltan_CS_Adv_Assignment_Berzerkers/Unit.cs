@@ -1,12 +1,30 @@
-﻿using System;
+﻿// "Berzerkers"
+// Created by Ori Ben Nun
+// For Dor Ben Dor | CS Advanced class (2024)
+
+// Humans:
+    // Giant => Human Siege
+    // Barbarian => Human Warrior
+    // Knight => Human Warrior
+
+// Gnomes:
+    // SoulBreaker => Gnome Siege
+// Tank => Gnome Siege
+// UnderTaker => Gnome Warrior
+
+// Elves:
+// Paladin => Elf Siege
+    // Rebel => Elf Warrior
+// Guardian => Elf Warrior 
+
+using System;
 
 namespace Tiltan_CS_Adv_Assignment_Berzerkers;
-
 public abstract class Unit
 {
     private const int ChanceToBlock = 50;
 
-    protected string UnitName { get; set; } = "Unit";
+    public string UnitName { get; protected set; } = "Unit";
     protected virtual int Hp { get; set; } = 100;
     public virtual int Damage { get; protected set; } = 1;
     public virtual int Defense { get; protected set; } = 1;
