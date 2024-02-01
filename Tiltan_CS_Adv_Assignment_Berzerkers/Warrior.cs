@@ -91,7 +91,7 @@ public sealed class Knight : Warrior
     public override string ToString()
     {
         return base.ToString() +
-               "Knight Stats:\n" +
+               $"{ClassName} Stats:\n" +
                $"Horse Attack Chance: {HorseAttackChance}%\n";
     }
 
@@ -110,7 +110,7 @@ public sealed class Knight : Warrior
             return;
         }
 
-        Console.WriteLine($"{UnitName} succeed a horse attack and is attacking {target} again!\n");
+        Console.WriteLine($"{UnitName} succeed a horse attack and is attacking {target.UnitName} again!\n");
 
         base.Attack(target);
     }
@@ -134,7 +134,7 @@ public sealed class Rebel : Warrior
     public override string ToString()
     {
         return base.ToString() +
-               "Rebel Stats:\n" +
+               $"{ClassName} Stats:\n" +
                $"Counter Attack Chance: {CounterAttackChance}%\n";
     }
 
@@ -148,8 +148,51 @@ public sealed class Rebel : Warrior
             return;
         }
 
-        Console.WriteLine($"{UnitName} succeed a counter attack and is attacking {attacker} back!\n");
+        Console.WriteLine($"{UnitName} succeed a counter attack and is attacking {attacker.UnitName} back!\n");
 
         Attack(attacker);
+    }
+}
+
+// UnderTaker = Gnome Warrior
+public sealed class UnderTaker : Warrior
+{
+    private const int OneShotChance = 10;
+
+    public UnderTaker(int hp = 150, int damage = 3, int defense = 3, string name = null) :
+        base(race: Race.Gnome, "UnderTaker", shieldBonusModifier: 0,
+            weaponBonusModifier: 1)
+    {
+        UnitName = GetFixedName(name, ClassName);
+        Hp = hp;
+        Damage = damage;
+        Defense = defense;
+    }
+
+    public override string ToString()
+    {
+        return base.ToString() +
+               $"{ClassName} Stats:\n" +
+               $"One Shot Attack Chance: {OneShotChance}%\n";
+    }
+
+    // Rebel special ability => has small chance (10%) to inta kill (one shot) upon attacking!
+    public override void Attack(Unit target)
+    {
+        var oneShotHit = RandomChanceChecker.DidChanceSucceed(OneShotChance);
+        var originalDamage = Damage;
+        if (oneShotHit)
+        {
+            Console.WriteLine($"{UnitName} is about to kill {target.UnitName} with one shot! DAMN!!\n");
+            Damage = target.Hp;
+        }
+
+        base.Attack(target);
+
+        // Resets the state
+        if (!oneShotHit) return;
+
+        Console.WriteLine($"{UnitName} reset their damage after killing {target.UnitName}!\n");
+        Damage = originalDamage;
     }
 }
