@@ -11,17 +11,25 @@ namespace Tiltan_CS_Adv_Assignment_Berzerkers
 
         private static void Test()
         {
-            var g = new Giant();
-            var r = new Rebel();
+            var s = new SoulBreaker(name: "Aba");
+            var t = new Tank();
+            var k = new Knight(name: "");
+            var kk = new Knight(name: "TONY");
 
-            Console.WriteLine(g);
-            Console.WriteLine(r);
+            Console.WriteLine($"{s}\n");
+            Console.WriteLine($"{t}\n");
+            Console.WriteLine($"{k}\n");
+            Console.WriteLine($"{kk}\n");
             
-            g.Attack(r);
-            r.Attack(g);
-            
-            Console.WriteLine(g);
-            Console.WriteLine(r);
+            s.Attack(t);
+            t.Attack(s);
+            t.Attack(k);
+            k.Attack(s);
+
+            Console.WriteLine($"{s}\n");
+            Console.WriteLine($"{t}\n");
+            Console.WriteLine($"{k}\n");
+            Console.WriteLine($"{kk}\n");
         }
     }
 }

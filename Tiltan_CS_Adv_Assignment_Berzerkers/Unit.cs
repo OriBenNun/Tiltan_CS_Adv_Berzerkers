@@ -24,28 +24,52 @@ public abstract class Unit
 {
     private const int ChanceToBlock = 50;
 
-    public string UnitName { get; protected set; } = "Unit";
-    protected virtual int Hp { get; set; } = 100;
+    public string UnitName { get; set; } = "Unit";
     public virtual int Damage { get; protected set; } = 1;
     public virtual int Defense { get; protected set; } = 1;
     private Race Race { get; }
+    protected virtual int Hp { get; set; } = 100;
+    protected string ClassName { get; }
 
-    protected Unit(Race race)
+    protected Unit(Race race, string className)
     {
         Race = race;
+        ClassName = className;
     }
 
     public override string ToString()
     {
-        return $"Unit Stats:\n" +
+        return $"\nUnit Stats:\n" +
                $"Unit Name: {UnitName}\n" +
+               $"Class Type: {ClassName}\n" +
                $"Race: {Race}\n" +
                $"Hp: {Hp}\n" +
                $"Defense: {Defense}\n" +
-               $"Damage: {Damage}\n";
+               $"Damage: {Damage}\n" +
+               $"Chance To Block: {ChanceToBlock}%\n";
     }
 
-    public virtual void Attack(Unit target) => target.Defend(this);
+    protected static string GetFixedName(string name, string className)
+    {
+        var fixedName = className;
+        if (!string.IsNullOrEmpty(name))
+        {
+            fixedName = $"{name} ({className})";
+        }
+
+        return fixedName;
+    }
+
+    public virtual void Attack(Unit target)
+    {
+        if (target == this)
+        {
+            Console.WriteLine($"{UnitName} tried to attack itself! aborting action.");
+            return;
+        }
+        
+        target.Defend(this);
+    }
 
     protected virtual void Defend(Unit attacker)
     {
@@ -63,7 +87,7 @@ public abstract class Unit
 
     protected virtual void BlockAttack(Unit attacker)
     {
-        Console.WriteLine($"{UnitName} blocked {attacker.UnitName}'s attack!");
+        Console.WriteLine($"{UnitName} blocked {attacker.UnitName}'s attack!\n");
     }
 
     private void TakeDamage(int damageToTake)
@@ -80,7 +104,7 @@ public abstract class Unit
 
     private void Die()
     {
-        Console.WriteLine($"{UnitName} is dead!");
+        Console.WriteLine($"{UnitName} is dead!\n");
     }
 }
 
@@ -93,13 +117,18 @@ public enum Race
 
 public static class RandomChanceChecker
 {
-    private static readonly Random Random = new();
+    private static readonly Random Random;
+
+    static RandomChanceChecker()
+    {
+        Random = new Random();
+    }
 
     public static bool DidChanceSucceed(int chancePercents)
     {
         var random = Random.Next(100);
 
-        Console.WriteLine($"Random number: {random}");
+        Console.WriteLine($"Random number: {random}\n\n");
 
         return random < chancePercents;
     }
