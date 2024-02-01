@@ -12,12 +12,12 @@ public abstract class Warrior : Unit
         ShieldBonusModifier = shieldBonusModifier;
         WeaponBonusModifier = weaponBonusModifier;
     }
-
+    
+    // Warrior special ability => makes a shield attack if has higher defense than the target
     public override void Attack(Unit target)
     {
         base.Attack(target);
 
-        // Warrior special ability => makes a shield attack if has higher defense than the target
         if (Defense <= target.Defense) { return; }
 
         ShieldAttack(target);
