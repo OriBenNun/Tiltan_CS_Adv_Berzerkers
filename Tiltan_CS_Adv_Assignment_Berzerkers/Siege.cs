@@ -16,7 +16,7 @@ public abstract class Siege : Unit
     }
 
     // Has 65% chance tp double attack if has more damage than the target
-    public override void Attack(Unit target)
+    protected override void Attack(Unit target)
     {
         base.Attack(target);
 
@@ -106,7 +106,7 @@ public sealed class Tank : Siege
     }
 
     // Tank special ability => Has 25% chance to deal a critical damage (triple damage)
-    public override void Attack(Unit target)
+    protected override void Attack(Unit target)
     {
         var criticalHit = RandomChanceChecker.DidChanceSucceed(CriticalHitChance);
         if (criticalHit)

@@ -62,7 +62,7 @@ public abstract class Unit
         return fixedName;
     }
 
-    public virtual void Attack(Unit target)
+    protected virtual void Attack(Unit target)
     {
         if (target == this)
         {

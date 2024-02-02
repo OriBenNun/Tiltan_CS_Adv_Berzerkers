@@ -25,7 +25,7 @@ public abstract class Warrior : Unit
     }
 
     // Warrior special ability => makes a shield attack if has higher defense than the target
-    public override void Attack(Unit target)
+    protected override void Attack(Unit target)
     {
         base.Attack(target);
 
@@ -96,7 +96,7 @@ public sealed class Knight : Warrior
     }
 
     // Knight special ability => has 30% of making a horse attack as an extra attack
-    public override void Attack(Unit target)
+    protected override void Attack(Unit target)
     {
         base.Attack(target);
 
@@ -177,7 +177,7 @@ public sealed class UnderTaker : Warrior
     }
 
     // UnderTaker special ability => has small chance (10%) to inta kill (one shot) upon attacking!
-    public override void Attack(Unit target)
+    protected override void Attack(Unit target)
     {
         var oneShotHit = RandomChanceChecker.DidChanceSucceed(OneShotChance);
         var originalDamage = Damage;
