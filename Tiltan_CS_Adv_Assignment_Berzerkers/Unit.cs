@@ -13,9 +13,9 @@
     // UnderTaker => Gnome Warrior
 
 // Elves:
-// Paladin => Elf Siege
+    // Paladin => Elf Siege
     // Rebel => Elf Warrior
-// Guardian => Elf Warrior 
+    // Guardian => Elf Warrior 
 
 using System;
 

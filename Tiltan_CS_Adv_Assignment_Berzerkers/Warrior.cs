@@ -5,7 +5,7 @@ namespace Tiltan_CS_Adv_Assignment_Berzerkers;
 public abstract class Warrior : Unit
 {
     private int ShieldBonusModifier { get; }
-    private int WeaponBonusModifier { get; }
+    protected int WeaponBonusModifier { get; set; }
     public override int Defense => base.Defense + ShieldBonusModifier;
     public override int Damage => base.Damage + WeaponBonusModifier;
 
@@ -64,9 +64,9 @@ public sealed class Barbarian : Warrior
         Defense = defense;
     }
 
+    // Barbarian special ability => can make a second attack even if they has no shield (modifier is 0)
     protected override void WarriorShieldAttack(Unit target)
     {
-        // Barbarian special ability => can make a second attack even if they has no shield (modifier is 0)
         Attack(target);
     }
 }
@@ -176,7 +176,7 @@ public sealed class UnderTaker : Warrior
                $"One Shot Attack Chance: {OneShotChance}%\n";
     }
 
-    // Rebel special ability => has small chance (10%) to inta kill (one shot) upon attacking!
+    // UnderTaker special ability => has small chance (10%) to inta kill (one shot) upon attacking!
     public override void Attack(Unit target)
     {
         var oneShotHit = RandomChanceChecker.DidChanceSucceed(OneShotChance);
@@ -192,5 +192,47 @@ public sealed class UnderTaker : Warrior
         // Resets the state
         if (!oneShotHit) return;
         Damage = originalDamage;
+    }
+}
+
+// Guardian = Elf Warrior
+public sealed class Guardian : Warrior
+{
+    private const int PowerShieldAttackChance = 45;
+    private const int PowerShieldAttackMultiplier = 4;
+
+    public Guardian(int hp = 150, int damage = 1, int defense = 2, string name = null) :
+        base(race: Race.Elf, "Guardian", shieldBonusModifier: 4,
+            weaponBonusModifier: 2)
+    {
+        UnitName = GetFixedName(name, ClassName);
+        Hp = hp;
+        Damage = damage;
+        Defense = defense;
+    }
+
+    public override string ToString()
+    {
+        return base.ToString() +
+               $"{ClassName} Stats:\n" +
+               $"Power Shield Attack Chance: {PowerShieldAttackChance}%\n" +
+               $"Power Shield Damage Multiplier: x{PowerShieldAttackMultiplier}\n";
+    }
+
+    // Guardian special ability => Upon making a shield attack - has a 45% to multiply their weapon damage by 4
+    protected override void WarriorShieldAttack(Unit target)
+    {
+        var powerShieldAttack = RandomChanceChecker.DidChanceSucceed(PowerShieldAttackChance);
+        if (powerShieldAttack)
+        {
+            Console.WriteLine($"{UnitName} multiplied their weapon damage by {PowerShieldAttackMultiplier} for this shield attack!\n");
+            WeaponBonusModifier *= PowerShieldAttackMultiplier;
+        }
+
+        base.WarriorShieldAttack(target);
+
+        // Resets the state
+        if (!powerShieldAttack) return;
+        WeaponBonusModifier /= PowerShieldAttackMultiplier;
     }
 }
