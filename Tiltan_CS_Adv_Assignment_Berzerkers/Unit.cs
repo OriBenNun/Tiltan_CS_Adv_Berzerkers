@@ -1,6 +1,6 @@
-﻿// "Berzerkers"
-// Created by Ori Ben Nun
-// For Dor Ben Dor | CS Advanced class (2024)
+﻿// ---- C# II (Dor Ben Dor) ----
+// Ori Ben Nun
+// ----------------------------
 
 // Humans:
     // Giant => Human Siege
