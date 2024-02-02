@@ -19,7 +19,6 @@
 
 using System;
 
-namespace Tiltan_CS_Adv_Assignment_Berzerkers;
 public abstract class Unit
 {
     private const int ChanceToBlock = 50;
