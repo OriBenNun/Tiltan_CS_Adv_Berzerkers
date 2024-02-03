@@ -11,6 +11,17 @@ namespace Tiltan_CS_Adv_Assignment_Berzerkers
 
         private static void Test()
         {
+
+            var d1 = new Dice(2, 8, 1);
+            var d2 = new Dice(2, 8, 1);
+            
+            Console.WriteLine(d1.ToString());
+            Console.WriteLine(d2.ToString());
+            Console.WriteLine(d1.Equals(d2));
+            Console.WriteLine(d1.GetHashCode());
+            Console.WriteLine(d2.GetHashCode());
+            Console.WriteLine(d1.GetHashCode() == d2.GetHashCode());
+
             // var s = new Tank(name: "Aba");
             // var p = new Guardian(name: "Gobo");
             // var pp = new Guardian(name: "Loooko");

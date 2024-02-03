@@ -3,19 +3,19 @@
 // ----------------------------
 
 // Humans:
-    // Giant => Human Siege
-    // Barbarian => Human Warrior
-    // Knight => Human Warrior
+// Giant => Human Siege
+// Barbarian => Human Warrior
+// Knight => Human Warrior
 
 // Gnomes:
-    // SoulBreaker => Gnome Siege
-    // Tank => Gnome Siege
-    // UnderTaker => Gnome Warrior
+// SoulBreaker => Gnome Siege
+// Tank => Gnome Siege
+// UnderTaker => Gnome Warrior
 
 // Elves:
-    // Paladin => Elf Siege
-    // Rebel => Elf Warrior
-    // Guardian => Elf Warrior 
+// Paladin => Elf Siege
+// Rebel => Elf Warrior
+// Guardian => Elf Warrior 
 
 using System;
 
@@ -74,9 +74,9 @@ public abstract class Unit
             Console.WriteLine($"{UnitName} tried to attack but they're dead! aborting action.");
             return;
         }
-        
+
         Console.WriteLine($"{UnitName} is attacking {target.UnitName}\n");
-        
+
         target.Defend(this);
     }
 
@@ -87,7 +87,7 @@ public abstract class Unit
             Console.WriteLine($"{UnitName} tried to defend but they're dead! aborting action.");
             return;
         }
-        
+
         var attackerDamage = attacker.Damage;
 
         if (attackerDamage < Defense &&
@@ -131,6 +131,57 @@ public enum Race
     Elf
 }
 
+public struct Dice : IEquatable<Dice>
+{
+    private uint Scalar { get; }
+    private uint BaseDie { get; }
+    private int Modifier { get; }
+
+    public Dice(uint scalar, uint baseDie, int modifier)
+    {
+        Scalar = scalar;
+        BaseDie = baseDie;
+        Modifier = modifier;
+    }
+
+    public bool Equals(Dice other)
+    {
+        return other.Scalar == Scalar &&
+               other.BaseDie == BaseDie &&
+               other.Modifier == Modifier;
+    }
+
+    // Got some help from Google and GPT to better understand
+    // the bit manipulation operators and how to use them correctly
+    public override int GetHashCode()
+    {
+        var hash = 19; // We start with a prime number
+
+        // Using bit-shifting and XOR (^) to combine hash codes and improve diversity
+        hash = (hash << 7) ^ Modifier.GetHashCode();
+        hash = (hash << 7) ^ BaseDie.GetHashCode();
+        hash = (hash << 7) ^ Scalar.GetHashCode();
+
+        return hash;
+    }
+
+    public override string ToString()
+    {
+        var suffix = Modifier.ToString();
+        switch (Modifier)
+        {
+            case > 0:
+                suffix = $"+{Modifier}";
+                break;
+            case 0:
+                suffix = "";
+                break;
+        }
+
+        return $"Dice Stats: {Scalar}d{BaseDie} {suffix}";
+    }
+}
+
 public static class RandomChanceChecker
 {
     private static readonly Random Random;
@@ -143,7 +194,7 @@ public static class RandomChanceChecker
     public static bool DidChanceSucceed(int chancePercents)
     {
         var random = Random.Next(100);
-        
+
         return random < chancePercents;
     }
 }
