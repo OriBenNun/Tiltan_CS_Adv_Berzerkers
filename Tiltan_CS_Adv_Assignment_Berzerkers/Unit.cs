@@ -135,52 +135,66 @@ public enum Race
 
 public struct Dice : IEquatable<Dice>
 {
-    private uint Scalar { get; }
-    private uint BaseDie { get; }
-    private int Modifier { get; }
+    private readonly uint _scalar = 1;
+    private readonly uint _baseDie = 6;
+    private readonly int _modifier = 0;
 
     public Dice(uint scalar, uint baseDie, int modifier)
     {
-        Scalar = scalar;
-        BaseDie = baseDie;
-        Modifier = modifier;
+        _scalar = scalar;
+        _baseDie = baseDie;
+        _modifier = modifier;
+    }
+
+    public int Roll()
+    {
+        var result = 0;
+        
+        for (var i = 0; i < _scalar; i++)
+        {
+            var rollResult = RandomChanceChecker.GetRandomInteger(_baseDie + 1, 1);
+            result += rollResult;
+        }
+        
+        return result + _modifier;
     }
 
     public bool Equals(Dice other)
     {
-        return other.Scalar == Scalar &&
-               other.BaseDie == BaseDie &&
-               other.Modifier == Modifier;
+        return other._scalar == _scalar &&
+               other._baseDie == _baseDie &&
+               other._modifier == _modifier;
     }
 
-    // Got some help from Google and GPT to better understand
-    // the bit manipulation operators and how to use them correctly
+    // I got some help from ChatGPT to better understand
+    // the bit manipulation principles and operators, and how to use them correctly to end up with a deterministic func
     public override int GetHashCode()
     {
-        var hash = 19; // We start with a prime number
+        var hash = 17; // We start with a prime number
 
-        // Using bit-shifting and XOR (^) to combine hash codes and improve diversity
-        hash = (hash << 7) ^ Modifier.GetHashCode();
-        hash = (hash << 7) ^ BaseDie.GetHashCode();
-        hash = (hash << 7) ^ Scalar.GetHashCode();
+        // Using bit-shifting and XOR (^) to combine hash codes and improve distribution.
+        // We use the values' hash codes to avoid operating on 0 or negatives, which can collapse distribution.
+        hash = (hash << 7) ^ _modifier.GetHashCode();
+        hash = (hash << 7) ^ _baseDie.GetHashCode();
+        hash = (hash << 7) ^ _scalar.GetHashCode();
 
         return hash;
     }
 
     public override string ToString()
     {
-        var suffix = Modifier.ToString();
-        switch (Modifier)
+        var suffix = _modifier.ToString();
+        switch (_modifier)
         {
             case > 0:
-                suffix = $"+{Modifier}";
+                suffix = $"+{_modifier}";
                 break;
             case 0:
                 suffix = "";
                 break;
         }
 
-        return $"Dice Stats: {Scalar}d{BaseDie} {suffix}";
+        return $"Dice Stats: {_scalar}d{_baseDie} {suffix}";
     }
 }
 
@@ -198,5 +212,10 @@ public static class RandomChanceChecker
         var random = Random.Next(100);
 
         return random < chancePercents;
+    }
+
+    public static int GetRandomInteger(uint maxValueExclusive, int minValueInclusive = 0)
+    {
+        return Random.Next(minValueInclusive, (int)maxValueExclusive);
     }
 }
