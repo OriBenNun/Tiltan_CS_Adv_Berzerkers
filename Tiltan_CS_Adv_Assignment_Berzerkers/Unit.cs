@@ -4,9 +4,9 @@
 
 #region Classes Overview
 // Humans:
-// Giant => Human Siege
-// Barbarian => Human Warrior
-// Knight => Human Warrior
+    // Giant => Human Siege
+    // Barbarian => Human Warrior
+    // Knight => Human Warrior
 
 // Gnomes:
     // SoulBreaker => Gnome Siege
