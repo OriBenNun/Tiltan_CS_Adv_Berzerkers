@@ -11,9 +11,9 @@ namespace Tiltan_CS_Adv_Assignment_Berzerkers
 
         private static void Test()
         {
-            DiceTest();
+            // DiceTest();
 
-            // UnitAttackTest();
+            UnitFightTest();
         }
 
         private static void DiceTest()
@@ -84,83 +84,83 @@ namespace Tiltan_CS_Adv_Assignment_Berzerkers
             Console.WriteLine(sixes);
         }
 
-        private void UnitAttackTest()
+        private static void UnitFightTest()
         {
             var s = new Tank(name: "Aba");
             var p = new Guardian(name: "Gobo");
-            var pp = new Guardian(name: "Loooko");
+            var pp = new Barbarian(name: "Loooko");
 
             Console.WriteLine(s);
             Console.WriteLine(p);
             Console.WriteLine(pp);
 
-            // s.Attack(p);
-            // p.Attack(s);
-            // s.Attack(p);
-            // p.Attack(s);
-            // s.Attack(pp);
-            // s.Attack(pp);
-            // s.Attack(pp);
-            // s.Attack(pp);
-            // pp.Attack(s);
-            // pp.Attack(s);
-            // pp.Attack(s);
-            // pp.Attack(s);
-            // pp.Attack(s);
-            // p.Attack(s);
-            // s.Attack(p);
-            // s.Attack(p);
-            // s.Attack(p);
-            // s.Attack(p);
-            // s.Attack(pp);
-            // s.Attack(pp);
-            // s.Attack(pp);
-            // s.Attack(p);
-            // p.Attack(s);
-            // p.Attack(s);
-            // p.Attack(s);
-            // p.Attack(s);
-            // p.Attack(s);
-            // s.Attack(p);
-            // pp.Attack(s);
-            // pp.Attack(s);
-            // pp.Attack(s);
-            // s.Attack(pp);
-            // s.Attack(pp);
-            // s.Attack(pp);
-            // pp.Attack(s);
-            // pp.Attack(s);
-            // p.Attack(s);
-            // s.Attack(p);
-            // p.Attack(s);
-            // s.Attack(p);
-            // p.Attack(s);
-            // s.Attack(p);
-            // s.Attack(p);
-            // pp.Attack(s);
-            // pp.Attack(s);
-            // pp.Attack(s);
-            // s.Attack(pp);
-            // s.Attack(pp);
-            // s.Attack(pp);
-            // pp.Attack(s);
-            // pp.Attack(s);
-            // s.Attack(p);
-            // s.Attack(p);
-            // s.Attack(p);
-            // p.Attack(s);
-            // p.Attack(s);
-            // s.Attack(pp);
-            // s.Attack(pp);
-            // s.Attack(pp);
-            // p.Attack(s);
-            // p.Attack(s);
-            // p.Attack(s);
-            // pp.Attack(s);
-            // pp.Attack(s);
-            // pp.Attack(s);
-            // pp.Attack(s);
-            // pp.Attack(s);
+            s.Fight(p);
+            // p.Fight(s);
+            // s.Fight(p);
+            // p.Fight(s);
+            // s.Fight(pp);
+            // s.Fight(pp);
+            // s.Fight(pp);
+            // s.Fight(pp);
+            // pp.Fight(s);
+            // pp.Fight(s);
+            // pp.Fight(s);
+            // pp.Fight(s);
+            // pp.Fight(s);
+            // p.Fight(s);
+            // s.Fight(p);
+            // s.Fight(p);
+            // s.Fight(p);
+            // s.Fight(p);
+            // s.Fight(pp);
+            // s.Fight(pp);
+            // s.Fight(pp);
+            // s.Fight(p);
+            // p.Fight(s);
+            // p.Fight(s);
+            // p.Fight(s);
+            // p.Fight(s);
+            // p.Fight(s);
+            // s.Fight(p);
+            // pp.Fight(s);
+            // pp.Fight(s);
+            // pp.Fight(s);
+            // s.Fight(pp);
+            // s.Fight(pp);
+            // s.Fight(pp);
+            // pp.Fight(s);
+            // pp.Fight(s);
+            // p.Fight(s);
+            // s.Fight(p);
+            // p.Fight(s);
+            // s.Fight(p);
+            // p.Fight(s);
+            // s.Fight(p);
+            // s.Fight(p);
+            // pp.Fight(s);
+            // pp.Fight(s);
+            // pp.Fight(s);
+            // s.Fight(pp);
+            // s.Fight(pp);
+            // s.Fight(pp);
+            // pp.Fight(s);
+            // pp.Fight(s);
+            // s.Fight(p);
+            // s.Fight(p);
+            // s.Fight(p);
+            // p.Fight(s);
+            // p.Fight(s);
+            // s.Fight(pp);
+            // s.Fight(pp);
+            // s.Fight(pp);
+            // p.Fight(s);
+            // p.Fight(s);
+            // p.Fight(s);
+            // pp.Fight(s);
+            // pp.Fight(s);
+            // pp.Fight(s);
+            // pp.Fight(s);
+            // pp.Fight(s);
 
             Console.WriteLine(s);
             Console.WriteLine(p);

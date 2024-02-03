@@ -28,10 +28,10 @@ public abstract class Unit
     private const int MinRollToHitTargetDefenseFactor = 2;
     
     public string UnitName { get; protected set; } = "Unit";
-    protected int Hp { get; private set; }
-    protected Dice DamageDice { get; set; }
-    protected Dice DefenseDice { get; set; }
+    public int Hp { get; private set; }
     protected string ClassName { get; }
+    private Dice DamageDice { get; set; }
+    private Dice DefenseDice { get; set; }
     private Race Race { get; }
     private int Capacity { get; }
     private Dice HitChanceDice { get; }
@@ -61,6 +61,14 @@ public abstract class Unit
                $"Damage: {DamageDice}\n" +
                $"Capacity: {Capacity}\n";
     }
+
+    public void Fight(Unit target)
+    {
+        Attack(target);
+    }
+    
+    public int GetUnitDamageRoll() => DamageDice.Roll(UnitName);
+    public int GetUnitDefenseRoll() => DefenseDice.Roll(UnitName);
 
     protected static string GetFixedName(string name, string className)
     {
@@ -124,8 +132,23 @@ public abstract class Unit
         Console.WriteLine($"{UnitName} blocked {attacker.UnitName}'s attack!\n");
     }
     
-    public int GetUnitDamageRoll() => DamageDice.Roll(UnitName);
-    public int GetUnitDefenseRoll() => DefenseDice.Roll(UnitName);
+    protected void UpdateDamageDiceModifier(int weaponModifier, bool isAdditive = false)
+    {
+        var originalDamage = DamageDice;
+        var newModifier = isAdditive ? originalDamage.Modifier + weaponModifier : weaponModifier;
+        
+        DamageDice = new Dice(originalDamage.Scalar, originalDamage.BaseDie, newModifier);
+    }
+
+    protected void UpdateDefenseDiceModifier(int shieldModifier, bool isAdditive = false)
+    {
+        var originalDefense = DefenseDice;
+        var newModifier = isAdditive ? originalDefense.Modifier + shieldModifier : shieldModifier;
+        
+        DefenseDice = new Dice(originalDefense.Scalar, originalDefense.BaseDie, newModifier);
+    }
+
+    protected int GetDamageDiceModifier() => DamageDice.Modifier;
 
     private void TakeDamage(int damageToTake)
     {
@@ -216,7 +239,7 @@ public readonly struct Dice : IEquatable<Dice>
                 break;
         }
 
-        return $"Dice Stats: {Scalar}d{BaseDie} {suffix}";
+        return $"{Scalar}d{BaseDie} {suffix}";
     }
 }
 

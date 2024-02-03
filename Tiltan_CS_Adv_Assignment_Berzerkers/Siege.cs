@@ -11,14 +11,7 @@ public abstract class Siege : Unit
     private const int ChanceToDoubleAttack = 65;
 
     protected Siege(Race race, string className, Dice damageDice, Dice defenseDice, Dice hitChanceDice, int hp,
-        int capacity) : base(
-        race,
-        className,
-        damageDice,
-        defenseDice,
-        hitChanceDice,
-        hp,
-        capacity)
+        int capacity) : base(race, className, damageDice, defenseDice, hitChanceDice, hp, capacity)
     {
     }
 
@@ -78,14 +71,13 @@ public sealed class Giant : Siege
 // SoulBreaker = Gnome Siege
 public sealed class SoulBreaker : Siege
 {
-    public SoulBreaker(int hp = 130, int damageDice = 5, int defenseDice = 2, string name = null) :
-        base(Race.Gnome,
+    public SoulBreaker(string name = null) : base(Race.Gnome,
             "SoulBreaker",
-            new Dice(),
-            new Dice(),
-            new Dice(),
+            new Dice(1, 20, 1),
+            new Dice(2, 6, 0),
+            new Dice(1, 12, 1),
             130,
-            30)
+            25)
     {
         UnitName = GetFixedName(name, ClassName);
     }
@@ -93,7 +85,7 @@ public sealed class SoulBreaker : Siege
     // SoulBreaker special ability => can defend using either its damage or defense stats
     protected override void Defend(Unit attacker)
     {
-        if (attacker.DamageDice < DamageDice)
+        if (attacker.GetUnitDamageRoll() < GetUnitDamageRoll())
         {
             BlockAttack(attacker);
             return;
@@ -109,12 +101,16 @@ public sealed class Tank : Siege
     private const int CriticalHitChance = 25;
     private const int CriticalDamageMultiplier = 3;
 
-    public Tank(int hp = 210, int damageDice = 2, int defenseDice = 6, string name = null) : base(Race.Gnome, "Tank")
+    public Tank(string name = null) : base(
+        Race.Gnome,
+        "Tank",
+        new Dice(2, 8, 0),
+        new Dice(2, 12, 2),
+        new Dice(2, 8 ,0),
+        210,
+        100)
     {
         UnitName = GetFixedName(name, ClassName);
-        Hp = hp;
-        DamageDice = damageDice;
-        DefenseDice = defenseDice;
     }
 
     public override string ToString()
@@ -125,44 +121,46 @@ public sealed class Tank : Siege
                $"Critical Damage Multiplier: x{CriticalDamageMultiplier}\n";
     }
 
-    // Tank special ability => Has 25% chance to deal a critical damage (triple damage)
+    // Tank special ability => Has 25% chance to deal a triple attack
     protected override void Attack(Unit target)
     {
-        var criticalHit = RandomChanceChecker.DidChanceSucceed(CriticalHitChance);
-        if (criticalHit)
+        if (RandomChanceChecker.DidChanceSucceed(CriticalHitChance))
         {
-            Console.WriteLine($"{UnitName} tripled their damage because of a critical hit!\n");
-            DamageDice *= CriticalDamageMultiplier;
+            Console.WriteLine($"{UnitName} succeed a triple attack check and will attack {target.UnitName} three times!\n");
+            base.Attack(target);
+            base.Attack(target);
+            base.Attack(target);
+            return;
         }
 
         base.Attack(target);
-
-        // Resets the state
-        if (!criticalHit) return;
-        DamageDice /= CriticalDamageMultiplier;
     }
 }
 
 // Paladin = Elf Siege
 public sealed class Paladin : Siege
 {
-    public Paladin(string name = null) : base(Race.Elf, "Paladin")
+    public Paladin(string name = null) : base(
+        Race.Elf,
+        "Paladin",
+        new Dice(1, 12, 1),
+        new Dice(2, 8, 2),
+        new Dice(1, 20, 0),
+        175,
+        60)
     {
         UnitName = GetFixedName(name, ClassName);
-        Hp = 175;
-        DamageDice = new Dice();
-        DefenseDice = new Dice();
     }
 
-    // Paladin special ability => upon succeeding the Siege Double Attack - the second attack is doubled
+    // Paladin special ability => upon succeeding the Siege Double Attack - the second attack modifier is tripled
     protected override void SiegeDoubleAttack(Unit target)
     {
-        DamageDice *= 2;
+        UpdateDamageDiceModifier(GetDamageDiceModifier() * 3);
 
         Console.WriteLine($"{UnitName} is doubling their damage for the second attack!\n");
 
         base.SiegeDoubleAttack(target);
 
-        DamageDice /= 2;
+        UpdateDamageDiceModifier(GetDamageDiceModifier() / 3);
     }
 }
