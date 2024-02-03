@@ -2,20 +2,22 @@
 // Ori Ben Nun
 // ----------------------------
 
+#region Classes Overview
 // Humans:
 // Giant => Human Siege
 // Barbarian => Human Warrior
 // Knight => Human Warrior
 
 // Gnomes:
-// SoulBreaker => Gnome Siege
-// Tank => Gnome Siege
-// UnderTaker => Gnome Warrior
+    // SoulBreaker => Gnome Siege
+    // Tank => Gnome Siege
+    // UnderTaker => Gnome Warrior
 
 // Elves:
-// Paladin => Elf Siege
-// Rebel => Elf Warrior
-// Guardian => Elf Warrior 
+    // Paladin => Elf Siege
+    // Rebel => Elf Warrior
+    // Guardian => Elf Warrior 
+#endregion
 
 using System;
 
