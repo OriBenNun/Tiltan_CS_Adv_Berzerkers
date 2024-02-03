@@ -13,7 +13,9 @@ namespace Tiltan_CS_Adv_Assignment_Berzerkers
         {
             // DiceTest();
 
-            UnitFightTest();
+            // UnitFightTest();
+            
+            UnitWeatherTest();
         }
 
         private static void DiceTest()
@@ -82,6 +84,41 @@ namespace Tiltan_CS_Adv_Assignment_Berzerkers
             Console.WriteLine(fours);
             Console.WriteLine(fives);
             Console.WriteLine(sixes);
+        }
+
+        private static void UnitWeatherTest()
+        {
+            var s = new Tank(name: "Aba");
+            var p = new Guardian(name: "Gobo");
+            var pp = new Barbarian(name: "Loooko");
+
+            Console.WriteLine(s);
+            Console.WriteLine(p);
+            Console.WriteLine(pp);
+            
+            s.WeatherEffect(Weather.Rainy);
+            p.WeatherEffect(Weather.Rainy);
+            pp.WeatherEffect(Weather.Rainy);
+            
+            Console.WriteLine(s);
+            Console.WriteLine(p);
+            Console.WriteLine(pp);
+            
+            s.WeatherEffect(Weather.Gusty);
+            p.WeatherEffect(Weather.Gusty);
+            pp.WeatherEffect(Weather.Gusty);
+            
+            Console.WriteLine(s);
+            Console.WriteLine(p);
+            Console.WriteLine(pp);
+            
+            s.WeatherEffect(Weather.None);
+            p.WeatherEffect(Weather.None);
+            pp.WeatherEffect(Weather.None);
+            
+            Console.WriteLine(s);
+            Console.WriteLine(p);
+            Console.WriteLine(pp);
         }
 
         private static void UnitFightTest()

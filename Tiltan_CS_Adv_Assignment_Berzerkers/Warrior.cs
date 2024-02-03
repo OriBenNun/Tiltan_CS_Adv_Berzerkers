@@ -3,7 +3,8 @@
 // ----------------------------
 
 using System;
-using Tiltan_CS_Adv_Assignment_Berzerkers;
+
+namespace Tiltan_CS_Adv_Assignment_Berzerkers;
 
 public abstract class Warrior : Unit
 {
@@ -173,15 +174,15 @@ public sealed class UnderTaker : Warrior
     private const int OneShotChance = 10;
 
     public UnderTaker(string name = null) : base(
-            race: Race.Gnome, 
-            "UnderTaker",
-            shieldBonusModifier: 2,
-            weaponBonusModifier: 2,
-            new Dice(1,8,1),
-            new Dice(2, 8, 1),
-            new Dice(1, 12, 1),
-            150,
-            45)
+        race: Race.Gnome, 
+        "UnderTaker",
+        shieldBonusModifier: 2,
+        weaponBonusModifier: 2,
+        new Dice(1,8,1),
+        new Dice(2, 8, 1),
+        new Dice(1, 12, 1),
+        150,
+        45)
     {
         UnitName = GetFixedName(name, ClassName);
     }
@@ -219,15 +220,15 @@ public sealed class Guardian : Warrior
     private const int PowerShieldAttackMultiplier = 4;
 
     public Guardian(string name = null) : base(
-            race: Race.Elf, 
-            "Guardian",
-            shieldBonusModifier: 4,
-            weaponBonusModifier: 2,
-            new Dice(1, 8, 0),
-            new Dice(2, 12, 2),
-            new Dice(2, 8, 1),
-            150,
-            75)
+        race: Race.Elf, 
+        "Guardian",
+        shieldBonusModifier: 4,
+        weaponBonusModifier: 2,
+        new Dice(1, 8, 0),
+        new Dice(2, 12, 2),
+        new Dice(2, 8, 1),
+        150,
+        75)
     {
         UnitName = GetFixedName(name, ClassName);
     }

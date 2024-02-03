@@ -26,18 +26,23 @@ namespace Tiltan_CS_Adv_Assignment_Berzerkers;
 public abstract class Unit
 {
     private const int MinRollToHitTargetDefenseFactor = 2;
+    private const int SunWeatherHitChanceModifierFactor = 4;
     
+    public event Action OnUnitDied;
     public string UnitName { get; protected set; } = "Unit";
     public int Hp { get; private set; }
     protected string ClassName { get; }
     private Dice DamageDice { get; set; }
     private Dice DefenseDice { get; set; }
+    private Dice HitChanceDice { get; set; }
     private Race Race { get; }
     private int Capacity { get; }
-    private Dice HitChanceDice { get; }
+
+    private Weather _currentAffectingWeather = Weather.None;
     
     private bool _isDead;
-    public event Action OnUnitDied;
+
+    private Dice _weatherCacheDice;
 
     protected Unit(Race race, string className, Dice damageDice, Dice defenseDice, Dice hitChanceDice, int hp, int capacity)
     {
@@ -59,12 +64,57 @@ public abstract class Unit
                $"Hp: {Hp}\n" +
                $"Defense: {DefenseDice}\n" +
                $"Damage: {DamageDice}\n" +
-               $"Capacity: {Capacity}\n";
+               $"Hit Chance: {HitChanceDice}\n" +
+               $"Capacity: {Capacity}\n" +
+               $"Weather Effect: {_currentAffectingWeather}\n";
     }
 
     public void Fight(Unit target)
     {
         Attack(target);
+    }
+
+    public void WeatherEffect(Weather weather)
+    {
+        if (_currentAffectingWeather != Weather.None)
+        {
+            ResetCurrentWeatherEffect();
+        }
+        
+        _currentAffectingWeather = weather;
+
+        string weatherEffectInfo;
+        
+        switch (_currentAffectingWeather)
+        {
+            case Weather.None:
+                return;
+            case Weather.Sunny:
+                // Unit is temporarily gained SunWeatherHitChanceModifierFactor to its hit chance dice modifier
+                UpdateHitChanceDiceModifier(SunWeatherHitChanceModifierFactor, true);
+                weatherEffectInfo = $"TEMPORARILY receives +{SunWeatherHitChanceModifierFactor} to their hit chance modifier";
+                break;
+            case Weather.Rainy:
+                // Unit is temporarily losing its defense dice modifier + the scalar drops to 0
+                _weatherCacheDice = DefenseDice;
+                DefenseDice = new Dice(1, DefenseDice.BaseDie, 0);
+                weatherEffectInfo = "TEMPORARILY loses their defense dice modifier and its scalar also drops to 0";
+                break;
+            case Weather.Snowy:
+                // Unit is losing hp equals to third of their capacity (the bigger the unit is the more damage it takes)
+                TakeDamage(Capacity / 3);
+                weatherEffectInfo = "Taking damage for an amount equals to third of their capacity";
+                break;
+            case Weather.Gusty:
+                // Unit is temporarily gaining +1 to its damage dice scalar
+                _weatherCacheDice = DamageDice;
+                DamageDice = new Dice(DamageDice.Scalar + 1, DamageDice.BaseDie, DamageDice.Modifier);
+                weatherEffectInfo = "TEMPORARILY gaining +1 to its damage dice scalar";
+                break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(weather), weather, null);
+        }
+        Console.WriteLine($"{_currentAffectingWeather} Weather effect on {UnitName} is now active ({weatherEffectInfo})");
     }
     
     public int GetUnitDamageRoll() => DamageDice.Roll(UnitName);
@@ -132,23 +182,58 @@ public abstract class Unit
         Console.WriteLine($"{UnitName} blocked {attacker.UnitName}'s attack!\n");
     }
     
-    protected void UpdateDamageDiceModifier(int weaponModifier, bool isAdditive = false)
+    protected void UpdateDamageDiceModifier(int damageModifier, bool isAdditive = false)
     {
         var originalDamage = DamageDice;
-        var newModifier = isAdditive ? originalDamage.Modifier + weaponModifier : weaponModifier;
+        var newModifier = isAdditive ? originalDamage.Modifier + damageModifier : damageModifier;
         
         DamageDice = new Dice(originalDamage.Scalar, originalDamage.BaseDie, newModifier);
     }
 
-    protected void UpdateDefenseDiceModifier(int shieldModifier, bool isAdditive = false)
+    protected void UpdateDefenseDiceModifier(int defenseModifier, bool isAdditive = false)
     {
         var originalDefense = DefenseDice;
-        var newModifier = isAdditive ? originalDefense.Modifier + shieldModifier : shieldModifier;
+        var newModifier = isAdditive ? originalDefense.Modifier + defenseModifier : defenseModifier;
         
         DefenseDice = new Dice(originalDefense.Scalar, originalDefense.BaseDie, newModifier);
     }
+    
+    private void UpdateHitChanceDiceModifier(int hitChanceModifier, bool isAdditive = false)
+    {
+        var originalHitChance = HitChanceDice;
+        var newModifier = isAdditive ? originalHitChance.Modifier + hitChanceModifier : hitChanceModifier;
+        
+        HitChanceDice = new Dice(originalHitChance.Scalar, originalHitChance.BaseDie, newModifier);
+    }
 
     protected int GetDamageDiceModifier() => DamageDice.Modifier;
+
+    private void ResetCurrentWeatherEffect()
+    {
+        Console.WriteLine($"{_currentAffectingWeather} Weather effect on {UnitName} is over");
+        switch(_currentAffectingWeather)
+        {
+            case Weather.None:
+                // Nothing to Undo
+                break;
+            case Weather.Sunny:
+                UpdateHitChanceDiceModifier(-SunWeatherHitChanceModifierFactor, true);
+                break;
+            case Weather.Rainy:
+                DefenseDice = _weatherCacheDice;
+                // DefenseDice = new Dice(_weatherCacheDice.Scalar, _weatherCacheDice.BaseDie, _weatherCacheDice.Modifier);
+                break;
+            case Weather.Snowy:
+                // Nothing to Undo
+                break;
+            case Weather.Gusty:
+                DamageDice = _weatherCacheDice;
+                break;
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
+        _currentAffectingWeather = Weather.None;
+    }
 
     private void TakeDamage(int damageToTake)
     {
@@ -175,6 +260,15 @@ public enum Race
     Human,
     Gnome,
     Elf
+}
+
+public enum Weather
+{
+    None,
+    Sunny,
+    Rainy,
+    Snowy,
+    Gusty
 }
 
 public readonly struct Dice : IEquatable<Dice>
