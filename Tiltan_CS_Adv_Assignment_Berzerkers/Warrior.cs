@@ -3,19 +3,38 @@
 // ----------------------------
 
 using System;
+using Tiltan_CS_Adv_Assignment_Berzerkers;
 
 public abstract class Warrior : Unit
 {
+    private int WeaponBonusModifier { get; }
     private int ShieldBonusModifier { get; }
-    protected int WeaponBonusModifier { get; set; }
-    public override int Defense => base.Defense + ShieldBonusModifier;
-    public override int Damage => base.Damage + WeaponBonusModifier;
 
-    protected Warrior(Race race, string className, int shieldBonusModifier, int weaponBonusModifier) : base(race,
-        className)
+    protected Warrior(Race race, string className, int shieldBonusModifier, int weaponBonusModifier,
+        Dice damageDice, Dice defenseDice ,Dice hitChanceDice, int hp, int capacity) :
+        base(race, className, damageDice, defenseDice, hitChanceDice, hp, capacity)
     {
         ShieldBonusModifier = shieldBonusModifier;
+        UpdateDefenseDiceModifier(ShieldBonusModifier);
+
         WeaponBonusModifier = weaponBonusModifier;
+        UpdateDamageDiceModifier(WeaponBonusModifier);
+    }
+
+    private void UpdateDamageDiceModifier(int weaponModifier, bool isAdditive = false)
+    {
+        var originalDamage = DamageDice;
+        var newModifier = isAdditive ? originalDamage.Modifier + weaponModifier : weaponModifier;
+        
+        DamageDice = new Dice(originalDamage.Scalar, originalDamage.BaseDie, newModifier);
+    }
+
+    private void UpdateDefenseDiceModifier(int shieldModifier, bool isAdditive = false)
+    {
+        var originalDefense = DefenseDice;
+        var newModifier = isAdditive ? originalDefense.Modifier + shieldModifier : shieldModifier;
+        
+        DefenseDice = new Dice(originalDefense.Scalar, originalDefense.BaseDie, newModifier);
     }
 
     public override string ToString()
@@ -26,12 +45,12 @@ public abstract class Warrior : Unit
                $"Shield Bonus Modifier: {ShieldBonusModifier}\n";
     }
 
-    // Warrior special ability => makes a shield attack if has higher defense than the target
+    // Warrior special ability => makes a second shield attack if defense rolling higher than the target after the first attack
     protected override void Attack(Unit target)
     {
         base.Attack(target);
 
-        if (Defense <= target.Defense)
+        if (GetUnitDefenseRoll() <= target.GetUnitDefenseRoll())
         {
             return;
         }
@@ -54,16 +73,18 @@ public abstract class Warrior : Unit
 // Barbarian => Human Warrior
 public sealed class Barbarian : Warrior
 {
-    public Barbarian(int hp = 145, int damage = 3, int defense = 2, string name = null) :
-        base(race: Race.Human,
-            "Barbarian",
-            shieldBonusModifier: 0,
-            weaponBonusModifier: 3)
+    public Barbarian(string name = null) : base(
+        race: Race.Human, 
+        "Barbarian",
+        shieldBonusModifier: 0,
+        weaponBonusModifier: 3,
+        new Dice(2,8,2),
+        new Dice(1,8,-1),
+        new Dice(2,6,1),
+        145,
+        60)
     {
         UnitName = GetFixedName(name, ClassName);
-        Hp = hp;
-        Damage = damage;
-        Defense = defense;
     }
 
     // Barbarian special ability => can make a second attack even if they has no shield (modifier is 0)
@@ -78,16 +99,18 @@ public sealed class Knight : Warrior
 {
     private const int HorseAttackChance = 30;
 
-    public Knight(int hp = 160, int damage = 2, int defense = 4, string name = null) : 
-        base(race: Race.Human,
+    public Knight(string name = null) : base(
+        race: Race.Human,
         "Knight",
         shieldBonusModifier: 2,
-        weaponBonusModifier: 1)
+        weaponBonusModifier: 1,
+        new Dice(1, 8,1),
+        new Dice(2,12,2),
+        new Dice(2,8,0),
+        160,
+        70)
     {
         UnitName = GetFixedName(name, ClassName);
-        Hp = hp;
-        Damage = damage;
-        Defense = defense;
     }
 
     public override string ToString()
@@ -123,14 +146,18 @@ public sealed class Rebel : Warrior
 {
     private const int CounterAttackChance = 50;
 
-    public Rebel(int hp = 100, int damage = 4, int defense = 3, string name = null) :
-        base(race: Race.Elf, "Knight", shieldBonusModifier: 2,
-            weaponBonusModifier: 1)
+    public Rebel(int hp = 100, int damageDice = 4, int defenseDice = 3, string name = null) : base(
+        race: Race.Elf, 
+        "Knight",
+        shieldBonusModifier: 2,
+        weaponBonusModifier: 1,
+        new Dice(2,8,1),
+        new Dice(1,8,0),
+        new Dice(3,8,2),
+        100,
+        35)
     {
         UnitName = GetFixedName(name, ClassName);
-        Hp = hp;
-        Damage = damage;
-        Defense = defense;
     }
 
     public override string ToString()
@@ -161,14 +188,14 @@ public sealed class UnderTaker : Warrior
 {
     private const int OneShotChance = 10;
 
-    public UnderTaker(int hp = 150, int damage = 3, int defense = 3, string name = null) :
+    public UnderTaker(int hp = 150, int damageDice = 3, int defenseDice = 3, string name = null) :
         base(race: Race.Gnome, "UnderTaker", shieldBonusModifier: 1,
             weaponBonusModifier: 1)
     {
         UnitName = GetFixedName(name, ClassName);
         Hp = hp;
-        Damage = damage;
-        Defense = defense;
+        DamageDice = damageDice;
+        DefenseDice = defenseDice;
     }
 
     public override string ToString()
@@ -182,18 +209,18 @@ public sealed class UnderTaker : Warrior
     protected override void Attack(Unit target)
     {
         var oneShotHit = RandomChanceChecker.DidChanceSucceed(OneShotChance);
-        var originalDamage = Damage;
+        var originalDamage = DamageDice;
         if (oneShotHit)
         {
             Console.WriteLine($"{UnitName} is about to kill {target.UnitName} with one shot! DAMN!!\n");
-            Damage = target.Hp;
+            DamageDice = target.Hp;
         }
 
         base.Attack(target);
 
         // Resets the state
         if (!oneShotHit) return;
-        Damage = originalDamage;
+        DamageDice = originalDamage;
     }
 }
 
@@ -203,14 +230,14 @@ public sealed class Guardian : Warrior
     private const int PowerShieldAttackChance = 45;
     private const int PowerShieldAttackMultiplier = 4;
 
-    public Guardian(int hp = 150, int damage = 1, int defense = 2, string name = null) :
+    public Guardian(int hp = 150, int damageDice = 1, int defenseDice = 2, string name = null) :
         base(race: Race.Elf, "Guardian", shieldBonusModifier: 4,
             weaponBonusModifier: 2)
     {
         UnitName = GetFixedName(name, ClassName);
         Hp = hp;
-        Damage = damage;
-        Defense = defense;
+        DamageDice = damageDice;
+        DefenseDice = defenseDice;
     }
 
     public override string ToString()
@@ -227,7 +254,8 @@ public sealed class Guardian : Warrior
         var powerShieldAttack = RandomChanceChecker.DidChanceSucceed(PowerShieldAttackChance);
         if (powerShieldAttack)
         {
-            Console.WriteLine($"{UnitName} multiplied their weapon damage by {PowerShieldAttackMultiplier} for this shield attack!\n");
+            Console.WriteLine(
+                $"{UnitName} multiplied their weapon damage by {PowerShieldAttackMultiplier} for this shield attack!\n");
             WeaponBonusModifier *= PowerShieldAttackMultiplier;
         }
 

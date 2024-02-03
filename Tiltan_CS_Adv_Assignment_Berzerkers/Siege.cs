@@ -4,11 +4,23 @@
 
 using System;
 
+namespace Tiltan_CS_Adv_Assignment_Berzerkers;
+
 public abstract class Siege : Unit
 {
     private const int ChanceToDoubleAttack = 65;
 
-    protected Siege(Race race, string className) : base(race, className) { }
+    protected Siege(Race race, string className, Dice damageDice, Dice defenseDice, Dice hitChanceDice, int hp,
+        int capacity) : base(
+        race,
+        className,
+        damageDice,
+        defenseDice,
+        hitChanceDice,
+        hp,
+        capacity)
+    {
+    }
 
     public override string ToString()
     {
@@ -17,12 +29,12 @@ public abstract class Siege : Unit
                $"Double Attack Chance: {ChanceToDoubleAttack}%\n";
     }
 
-    // Has 65% chance tp double attack if has more damage than the target
+    // Has 65% chance to double attack if damage rolled more than the target after the first attack
     protected override void Attack(Unit target)
     {
         base.Attack(target);
 
-        if (Damage <= target.Damage ||
+        if (GetUnitDamageRoll() <= target.GetUnitDamageRoll() ||
             !RandomChanceChecker.DidChanceSucceed(ChanceToDoubleAttack))
         {
             return;
@@ -42,12 +54,16 @@ public abstract class Siege : Unit
 // Giant = Human Siege
 public sealed class Giant : Siege
 {
-    public Giant(int hp = 180, int damage = 2, int defense = 5, string name = null) : base(Race.Human, "Giant")
+    public Giant(string name = null) : base(
+        Race.Human,
+        "Giant",
+        new Dice(1,8,0),
+        new Dice(2,12,2),
+        new Dice(2,6,-1),
+        180,
+        100)
     {
         UnitName = GetFixedName(name, ClassName);
-        Hp = hp;
-        Damage = damage;
-        Defense = defense;
     }
 
     // Giant special ability => counter attack upon successful block
@@ -62,20 +78,22 @@ public sealed class Giant : Siege
 // SoulBreaker = Gnome Siege
 public sealed class SoulBreaker : Siege
 {
-    public SoulBreaker(int hp = 130, int damage = 5, int defense = 2, string name = null) :
+    public SoulBreaker(int hp = 130, int damageDice = 5, int defenseDice = 2, string name = null) :
         base(Race.Gnome,
-            "SoulBreaker")
+            "SoulBreaker",
+            new Dice(),
+            new Dice(),
+            new Dice(),
+            130,
+            30)
     {
         UnitName = GetFixedName(name, ClassName);
-        Hp = hp;
-        Damage = damage;
-        Defense = defense;
     }
 
     // SoulBreaker special ability => can defend using either its damage or defense stats
     protected override void Defend(Unit attacker)
     {
-        if (attacker.Damage < Damage)
+        if (attacker.DamageDice < DamageDice)
         {
             BlockAttack(attacker);
             return;
@@ -91,12 +109,12 @@ public sealed class Tank : Siege
     private const int CriticalHitChance = 25;
     private const int CriticalDamageMultiplier = 3;
 
-    public Tank(int hp = 210, int damage = 2, int defense = 6, string name = null) : base(Race.Gnome, "Tank")
+    public Tank(int hp = 210, int damageDice = 2, int defenseDice = 6, string name = null) : base(Race.Gnome, "Tank")
     {
         UnitName = GetFixedName(name, ClassName);
         Hp = hp;
-        Damage = damage;
-        Defense = defense;
+        DamageDice = damageDice;
+        DefenseDice = defenseDice;
     }
 
     public override string ToString()
@@ -114,39 +132,37 @@ public sealed class Tank : Siege
         if (criticalHit)
         {
             Console.WriteLine($"{UnitName} tripled their damage because of a critical hit!\n");
-            Damage *= CriticalDamageMultiplier;
+            DamageDice *= CriticalDamageMultiplier;
         }
 
         base.Attack(target);
 
         // Resets the state
         if (!criticalHit) return;
-        Damage /= CriticalDamageMultiplier;
+        DamageDice /= CriticalDamageMultiplier;
     }
 }
 
 // Paladin = Elf Siege
 public sealed class Paladin : Siege
 {
-    public Paladin(int hp = 175, int damage = 4, int defense = 3, string name = null) :
-        base(Race.Elf,
-            "Paladin")
+    public Paladin(string name = null) : base(Race.Elf, "Paladin")
     {
         UnitName = GetFixedName(name, ClassName);
-        Hp = hp;
-        Damage = damage;
-        Defense = defense;
+        Hp = 175;
+        DamageDice = new Dice();
+        DefenseDice = new Dice();
     }
 
     // Paladin special ability => upon succeeding the Siege Double Attack - the second attack is doubled
     protected override void SiegeDoubleAttack(Unit target)
     {
-        Damage *= 2;
-        
+        DamageDice *= 2;
+
         Console.WriteLine($"{UnitName} is doubling their damage for the second attack!\n");
-        
+
         base.SiegeDoubleAttack(target);
-        
-        Damage /= 2;
+
+        DamageDice /= 2;
     }
 }
