@@ -25,13 +25,20 @@ public abstract class Siege : Unit
     {
         base.Attack(target);
 
+        Console.WriteLine($"{UnitName} is checking for a Siege double attack");
         if (GetUnitDamageRoll() <= target.GetUnitDamageRoll() ||
             !RandomChanceChecker.DidChanceSucceed(ChanceToDoubleAttack))
         {
+            Console.WriteLine($"{UnitName} failed the Siege double attack check");
             return;
         }
 
         SiegeDoubleAttack(target);
+    }
+
+    protected virtual void UnitBaseAttack(Unit target)
+    {
+        base.Attack(target);
     }
 
     protected virtual void SiegeDoubleAttack(Unit target)
@@ -119,15 +126,15 @@ public sealed class Tank : Siege
                $"Critical Damage Multiplier: x{CriticalDamageMultiplier}\n";
     }
 
-    // Tank special ability => Has 25% chance to deal a triple attack
+    // Tank special ability => Has 25% chance to deal a triple attack instead of the siege double attack (if succeed)
     protected override void Attack(Unit target)
     {
         if (RandomChanceChecker.DidChanceSucceed(CriticalHitChance))
         {
             Console.WriteLine($"{UnitName} succeed a triple attack check and will attack {target.UnitName} three times!\n");
-            base.Attack(target);
-            base.Attack(target);
-            base.Attack(target);
+            UnitBaseAttack(target);
+            UnitBaseAttack(target);
+            UnitBaseAttack(target);
             return;
         }
 

@@ -53,7 +53,7 @@ public abstract class Warrior : Unit
             return;
         }
         
-        Console.WriteLine($"{UnitName} didn't miss the shield attack and is attacking {target.UnitName} again");
+        Console.WriteLine($"{UnitName} didn't miss the shield attack and will try to attack {target.UnitName} again");
 
         base.Attack(target);
     }

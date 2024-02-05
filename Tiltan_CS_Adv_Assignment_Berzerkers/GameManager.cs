@@ -39,7 +39,7 @@ public class GameManager
             roundCounter++;
         }
 
-        var winnerString = liveUnitsCountTeamA == 0 ? "Team A" : "Team B";
+        var winnerString = liveUnitsCountTeamA == 0 ? "Team B" : "Team A";
         var winnerTeamAliveCount = liveUnitsCountTeamA == 0 ? liveUnitsCountTeamB : liveUnitsCountTeamA;
         // TODO add stealing loot according to the loser resources, and the capacity of the winner's alive units (each steals a random amount if the loser has resources left)
         Console.WriteLine($"\n\nThe fight is over at round #{roundCounter}!\n" +

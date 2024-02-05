@@ -18,6 +18,11 @@ namespace Tiltan_CS_Adv_Assignment_Berzerkers
             
             // UnitWeatherTest();
 
+            FightTest();
+        }
+
+        private static void FightTest()
+        {
             var teamA = new List<Unit>
             {
                 new Barbarian(),
@@ -25,7 +30,7 @@ namespace Tiltan_CS_Adv_Assignment_Berzerkers
                 new Rebel(),
                 new Paladin()
             };
-            
+
             var teamB = new List<Unit>
             {
                 new Giant(),
@@ -36,7 +41,7 @@ namespace Tiltan_CS_Adv_Assignment_Berzerkers
             };
 
             var gm = new GameManager();
-            
+
             gm.UnitsFight(teamA, teamB);
         }
 

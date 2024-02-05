@@ -24,9 +24,9 @@ using System;
 public abstract class Unit
 {
     private const int MinRollToHitTargetDefenseFactor = 2;
+    private const int MinRollToBlockDefenseFactor = 2;
     private const int SunWeatherHitChanceModifierFactor = 4;
     
-    public event Action OnUnitDied;
     public string UnitName { get; protected set; } = "Unit";
     public int Hp { get; private set; }
     protected string ClassName { get; }
@@ -174,7 +174,7 @@ public abstract class Unit
 
         var attackerDamage = attacker.GetUnitDamageRoll();
 
-        if (attackerDamage <= GetUnitDefenseRoll())
+        if (attackerDamage <= GetUnitDefenseRoll() / MinRollToBlockDefenseFactor)
         {
             BlockAttack(attacker);
             return;
@@ -257,7 +257,6 @@ public abstract class Unit
     {
         Console.WriteLine($"{UnitName} is dead!\n");
         _isDead = true;
-        OnUnitDied?.Invoke();
     }
 }
 
