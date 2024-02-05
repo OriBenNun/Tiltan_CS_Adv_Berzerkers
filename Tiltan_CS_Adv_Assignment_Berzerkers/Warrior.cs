@@ -4,8 +4,6 @@
 
 using System;
 
-namespace Tiltan_CS_Adv_Assignment_Berzerkers;
-
 public abstract class Warrior : Unit
 {
     protected int WeaponBonusModifier { get; }
@@ -34,9 +32,12 @@ public abstract class Warrior : Unit
     protected override void Attack(Unit target)
     {
         base.Attack(target);
+        
+        Console.WriteLine($"{UnitName} is trying to make a warrior shield attack against {target.UnitName}");
 
         if (GetUnitDefenseRoll() <= target.GetUnitDefenseRoll())
         {
+            Console.WriteLine($"{UnitName} missed the shield attack against {target.UnitName}");
             return;
         }
 
@@ -48,8 +49,11 @@ public abstract class Warrior : Unit
         // If the warrior has no shield, shield attack is canceled
         if (ShieldBonusModifier <= 0)
         {
+            Console.WriteLine($"{UnitName} doesn't have a shield, so their shield attack against {target.UnitName} is canceled.");
             return;
         }
+        
+        Console.WriteLine($"{UnitName} didn't miss the shield attack and is attacking {target.UnitName} again");
 
         base.Attack(target);
     }

@@ -21,8 +21,6 @@
 
 using System;
 
-namespace Tiltan_CS_Adv_Assignment_Berzerkers;
-
 public abstract class Unit
 {
     private const int MinRollToHitTargetDefenseFactor = 2;
@@ -71,6 +69,11 @@ public abstract class Unit
 
     public void Fight(Unit target)
     {
+        if (target.GetIsDead())
+        {
+            return;
+        }
+        
         Attack(target);
     }
 
@@ -119,6 +122,7 @@ public abstract class Unit
     
     public int GetUnitDamageRoll() => DamageDice.Roll(UnitName);
     public int GetUnitDefenseRoll() => DefenseDice.Roll(UnitName);
+    public bool GetIsDead() => _isDead;
 
     protected static string GetFixedName(string name, string className)
     {
@@ -144,6 +148,8 @@ public abstract class Unit
             Console.WriteLine($"{UnitName} tried to attack but they're dead! aborting action.");
             return;
         }
+        
+        Console.WriteLine($"{UnitName} is trying to attack {target.UnitName}");
 
         var minRollToHit = target.GetUnitDefenseRoll() / MinRollToHitTargetDefenseFactor;
 
@@ -153,7 +159,7 @@ public abstract class Unit
             return;
         }
 
-        Console.WriteLine($"{UnitName} is attacking {target.UnitName}!\n");
+        Console.WriteLine($"{UnitName} didn't miss and is attacking {target.UnitName}!\n");
 
         target.Defend(this);
     }
@@ -273,9 +279,9 @@ public enum Weather
 
 public readonly struct Dice : IEquatable<Dice>
 {
-    public uint Scalar { get; } = 1;
-    public uint BaseDie { get; } = 6;
-    public int Modifier { get; } = 0;
+    public uint Scalar { get; }
+    public uint BaseDie { get; }
+    public int Modifier { get; }
 
     public Dice(uint scalar, uint baseDie, int modifier)
     {
@@ -290,7 +296,7 @@ public readonly struct Dice : IEquatable<Dice>
         
         for (var i = 0; i < Scalar; i++)
         {
-            var rollResult = RandomChanceChecker.GetRandomInteger(BaseDie + 1, 1);
+            var rollResult = RandomChanceChecker.GetRandomInteger((int)BaseDie + 1, 1);
             result += rollResult;
         }
         
@@ -353,8 +359,8 @@ public static class RandomChanceChecker
         return random < chancePercents;
     }
 
-    public static int GetRandomInteger(uint maxValueExclusive, int minValueInclusive = 0)
+    public static int GetRandomInteger(int maxValueExclusive, int minValueInclusive = 0)
     {
-        return Random.Next(minValueInclusive, (int)maxValueExclusive);
+        return Random.Next(minValueInclusive, maxValueExclusive);
     }
 }

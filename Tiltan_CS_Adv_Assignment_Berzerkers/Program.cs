@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Tiltan_CS_Adv_Assignment_Berzerkers
 {
@@ -15,7 +16,28 @@ namespace Tiltan_CS_Adv_Assignment_Berzerkers
 
             // UnitFightTest();
             
-            UnitWeatherTest();
+            // UnitWeatherTest();
+
+            var teamA = new List<Unit>
+            {
+                new Barbarian(),
+                new Knight(),
+                new Rebel(),
+                new Paladin()
+            };
+            
+            var teamB = new List<Unit>
+            {
+                new Giant(),
+                new UnderTaker(),
+                new SoulBreaker(),
+                new Guardian(),
+                new Tank()
+            };
+
+            var gm = new GameManager();
+            
+            gm.UnitsFight(teamA, teamB);
         }
 
         private static void DiceTest()

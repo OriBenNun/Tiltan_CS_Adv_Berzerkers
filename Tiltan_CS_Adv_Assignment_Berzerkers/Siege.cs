@@ -4,8 +4,6 @@
 
 using System;
 
-namespace Tiltan_CS_Adv_Assignment_Berzerkers;
-
 public abstract class Siege : Unit
 {
     private const int ChanceToDoubleAttack = 65;
