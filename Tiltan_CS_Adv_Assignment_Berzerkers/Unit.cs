@@ -74,11 +74,13 @@ public abstract class Unit
 
     public void WeatherEffect(Weather weather)
     {
+        var didEffectChangedText = _currentAffectingWeather == weather ? "still" : "now";
+        
         if (_currentAffectingWeather != Weather.None)
         {
-            ResetCurrentWeatherEffect();
+            ResetCurrentWeatherEffect(weather);
         }
-        
+
         _currentAffectingWeather = weather;
 
         string weatherEffectInfo;
@@ -93,10 +95,10 @@ public abstract class Unit
                 weatherEffectInfo = $"TEMPORARILY receives +{SunWeatherHitChanceModifierFactor} to their hit chance modifier";
                 break;
             case Weather.Rainy:
-                // Unit is temporarily losing its defense dice modifier + the scalar drops to 0
+                // Unit is temporarily losing its defense dice modifier + the scalar drops to 1
                 _weatherCacheDice = DefenseDice;
                 DefenseDice = new Dice(1, DefenseDice.BaseDie, 0);
-                weatherEffectInfo = "TEMPORARILY loses their defense dice modifier and its scalar also drops to 0";
+                weatherEffectInfo = "TEMPORARILY loses their defense dice modifier and its scalar also drops to 1";
                 break;
             case Weather.Snowy:
                 // Unit is losing hp equals to third of their capacity (the bigger the unit is the more damage it takes)
@@ -112,7 +114,7 @@ public abstract class Unit
             default:
                 throw new ArgumentOutOfRangeException(nameof(weather), weather, null);
         }
-        Console.WriteLine($"{_currentAffectingWeather} Weather effect on {UnitName} is now active ({weatherEffectInfo})");
+        Console.WriteLine($"{_currentAffectingWeather} Weather effect on {UnitName} is {didEffectChangedText} active ({weatherEffectInfo})");
     }
     
     public int GetUnitDamageRoll() => DamageDice.Roll(UnitName);
@@ -234,9 +236,12 @@ public abstract class Unit
 
     protected int GetDamageDiceModifier() => DamageDice.Modifier;
 
-    private void ResetCurrentWeatherEffect()
+    private void ResetCurrentWeatherEffect(Weather newWeather = Weather.None)
     {
-        Console.WriteLine($"{_currentAffectingWeather} Weather effect on {UnitName} is over");
+        if (_currentAffectingWeather != newWeather)
+        {
+            Console.WriteLine($"{_currentAffectingWeather} Weather effect on {UnitName} is over");
+        }
         switch(_currentAffectingWeather)
         {
             case Weather.None:
