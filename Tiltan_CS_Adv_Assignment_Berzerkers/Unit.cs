@@ -149,18 +149,36 @@ public abstract class Unit
             return;
         }
         
-        Console.WriteLine($"{UnitName} is trying to attack {target.UnitName}");
+        Console.WriteLine($"{UnitName} is rolling an hit check against {target.UnitName}");
 
         var minRollToHit = target.GetUnitDefenseRoll() / MinRollToHitTargetDefenseFactor;
 
         if (HitChanceDice.Roll(UnitName) < minRollToHit)
         {
-            Console.WriteLine($"{UnitName} missed the attack against {target.UnitName}!\n");
+            Console.WriteLine($"{UnitName} missed the hit against {target.UnitName}!\n");
             return;
         }
 
-        Console.WriteLine($"{UnitName} didn't miss and is attacking {target.UnitName}!\n");
+        Console.WriteLine($"{UnitName} succeeded hit check and is attacking {target.UnitName}!\n");
 
+        target.Defend(this);
+    }
+    
+    // This method is used by the unit classes to be able to "go around" their archetype Attack overriden method, when needed  
+    protected void UnitBasicUncheckedAttack(Unit target)
+    {
+        if (target == this)
+        {
+            Console.WriteLine($"{UnitName} tried to attack itself! aborting action.");
+            return;
+        }
+
+        if (_isDead)
+        {
+            Console.WriteLine($"{UnitName} tried to attack but they're dead! aborting action.");
+            return;
+        }
+        
         target.Defend(this);
     }
 
@@ -174,6 +192,7 @@ public abstract class Unit
 
         var attackerDamage = attacker.GetUnitDamageRoll();
 
+        // In case the delta between the attacker damage roll and the defender defense roll is too drastic - the attack is completely blocked
         if (attackerDamage <= GetUnitDefenseRoll() / MinRollToBlockDefenseFactor)
         {
             BlockAttack(attacker);

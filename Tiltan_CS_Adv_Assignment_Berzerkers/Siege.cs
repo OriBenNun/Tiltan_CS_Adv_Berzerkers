@@ -26,6 +26,7 @@ public abstract class Siege : Unit
         base.Attack(target);
 
         Console.WriteLine($"{UnitName} is checking for a Siege double attack");
+        
         if (GetUnitDamageRoll() <= target.GetUnitDamageRoll() ||
             !RandomChanceChecker.DidChanceSucceed(ChanceToDoubleAttack))
         {
@@ -33,19 +34,14 @@ public abstract class Siege : Unit
             return;
         }
 
-        SiegeDoubleAttack(target);
-    }
+        Console.WriteLine($"{UnitName} (Siege) succeeded a double attack check and is attacking {target.UnitName} again!\n");
 
-    protected virtual void UnitBaseAttack(Unit target)
-    {
-        base.Attack(target);
+        SiegeDoubleAttack(target);
     }
 
     protected virtual void SiegeDoubleAttack(Unit target)
     {
-        Console.WriteLine($"{UnitName} (Siege) succeeded a double attack on {target.UnitName}!\n");
-
-        base.Attack(target);
+        UnitBasicUncheckedAttack(target);
     }
 }
 
@@ -55,9 +51,9 @@ public sealed class Giant : Siege
     public Giant(string name = null) : base(
         Race.Human,
         "Giant",
-        new Dice(1,8,0),
+        new Dice(1,12,0),
         new Dice(2,12,2),
-        new Dice(2,6,-1),
+        new Dice(2,8,-1),
         180,
         100)
     {
@@ -69,7 +65,7 @@ public sealed class Giant : Siege
     {
         base.BlockAttack(attacker);
 
-        Attack(attacker);
+        UnitBasicUncheckedAttack(attacker);
     }
 }
 
@@ -78,8 +74,8 @@ public sealed class SoulBreaker : Siege
 {
     public SoulBreaker(string name = null) : base(Race.Gnome,
             "SoulBreaker",
-            new Dice(1, 20, 1),
-            new Dice(2, 6, 0),
+            new Dice(1, 20, 3),
+            new Dice(2, 8, 0),
             new Dice(1, 12, 1),
             130,
             25)
@@ -109,8 +105,8 @@ public sealed class Tank : Siege
     public Tank(string name = null) : base(
         Race.Gnome,
         "Tank",
-        new Dice(2, 8, 0),
-        new Dice(2, 12, 2),
+        new Dice(1, 10, 0),
+        new Dice(1, 20, 2),
         new Dice(2, 8 ,0),
         210,
         100)
@@ -132,9 +128,9 @@ public sealed class Tank : Siege
         if (RandomChanceChecker.DidChanceSucceed(CriticalHitChance))
         {
             Console.WriteLine($"{UnitName} succeed a triple attack check and will attack {target.UnitName} three times!\n");
-            UnitBaseAttack(target);
-            UnitBaseAttack(target);
-            UnitBaseAttack(target);
+            UnitBasicUncheckedAttack(target);
+            UnitBasicUncheckedAttack(target);
+            UnitBasicUncheckedAttack(target);
             return;
         }
 
@@ -148,8 +144,8 @@ public sealed class Paladin : Siege
     public Paladin(string name = null) : base(
         Race.Elf,
         "Paladin",
-        new Dice(1, 12, 1),
-        new Dice(2, 8, 2),
+        new Dice(1, 20, 1),
+        new Dice(2, 10, 2),
         new Dice(1, 20, 0),
         175,
         60)
@@ -162,7 +158,7 @@ public sealed class Paladin : Siege
     {
         UpdateDamageDiceModifier(GetDamageDiceModifier() * 3);
 
-        Console.WriteLine($"{UnitName} is doubling their damage for the second attack!\n");
+        Console.WriteLine($"{UnitName} is doubling their damage for the Siege second attack!\n");
 
         base.SiegeDoubleAttack(target);
 

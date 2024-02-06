@@ -53,9 +53,9 @@ public abstract class Warrior : Unit
             return;
         }
         
-        Console.WriteLine($"{UnitName} didn't miss the shield attack and will try to attack {target.UnitName} again");
+        Console.WriteLine($"{UnitName} didn't miss the shield attack is attacking {target.UnitName} again");
 
-        base.Attack(target);
+        UnitBasicUncheckedAttack(target);
     }
 }
 
@@ -67,9 +67,9 @@ public sealed class Barbarian : Warrior
         "Barbarian",
         shieldBonusModifier: 0,
         weaponBonusModifier: 3,
-        new Dice(2,8,2),
-        new Dice(1,8,-1),
-        new Dice(2,6,1),
+        new Dice(2,12,2),
+        new Dice(1,10,-2),
+        new Dice(2,8,1),
         145,
         60)
     {
@@ -79,7 +79,7 @@ public sealed class Barbarian : Warrior
     // Barbarian special ability => can make a second attack even if they has no shield (modifier is 0)
     protected override void WarriorShieldAttack(Unit target)
     {
-        Attack(target);
+        UnitBasicUncheckedAttack(target);
     }
 }
 
@@ -93,9 +93,9 @@ public sealed class Knight : Warrior
         "Knight",
         shieldBonusModifier: 2,
         weaponBonusModifier: 1,
-        new Dice(1, 8,1),
+        new Dice(2, 8,1),
         new Dice(2,12,2),
-        new Dice(2,8,0),
+        new Dice(1,20,1),
         160,
         70)
     {
@@ -109,7 +109,7 @@ public sealed class Knight : Warrior
                $"Horse Attack Chance: {HorseAttackChance}%\n";
     }
 
-    // Knight special ability => has 30% of making a horse attack as an extra attack
+    // Knight special ability => has 30% of making a horse attack as an extra attack (on top of the Warrior Shield Attack)
     protected override void Attack(Unit target)
     {
         base.Attack(target);
@@ -119,14 +119,17 @@ public sealed class Knight : Warrior
 
     private void HorseAttack(Unit target)
     {
+        Console.WriteLine($"{UnitName} is rolling a check for a Horse Attack (Knight ability) against {target.UnitName}\n");
+
         if (!RandomChanceChecker.DidChanceSucceed(HorseAttackChance))
         {
+            Console.WriteLine($"{UnitName} failed the Horse Attack check against {target.UnitName}\n");
             return;
         }
 
-        Console.WriteLine($"{UnitName} succeed a horse attack and is attacking {target.UnitName} again!\n");
+        Console.WriteLine($"{UnitName} succeed the Horse Attack check and is trying to attack {target.UnitName} again!\n");
 
-        base.Attack(target);
+        UnitBasicUncheckedAttack(target);
     }
 }
 
@@ -137,14 +140,14 @@ public sealed class Rebel : Warrior
 
     public Rebel(string name = null) : base(
         race: Race.Elf, 
-        "Knight",
-        shieldBonusModifier: 2,
-        weaponBonusModifier: 1,
-        new Dice(2,8,1),
-        new Dice(1,8,0),
+        "Rebel",
+        shieldBonusModifier: 1,
+        weaponBonusModifier: 2,
+        new Dice(2,10,1),
+        new Dice(2,6,0),
         new Dice(3,8,2),
-        100,
-        35)
+        115,
+        25)
     {
         UnitName = GetFixedName(name, ClassName);
     }
@@ -166,9 +169,9 @@ public sealed class Rebel : Warrior
             return;
         }
 
-        Console.WriteLine($"{UnitName} succeed a counter attack and is attacking {attacker.UnitName} back!\n");
+        Console.WriteLine($"{UnitName} succeed a counter attack check (Rebel ability) and will try to attack {attacker.UnitName} back!\n");
 
-        Attack(attacker);
+        UnitBasicUncheckedAttack(attacker);
     }
 }
 
@@ -182,9 +185,9 @@ public sealed class UnderTaker : Warrior
         "UnderTaker",
         shieldBonusModifier: 2,
         weaponBonusModifier: 2,
-        new Dice(1,8,1),
-        new Dice(2, 8, 1),
-        new Dice(1, 12, 1),
+        new Dice(1,8,0),
+        new Dice(2, 10, 1),
+        new Dice(3, 6, 1),
         150,
         45)
     {
@@ -228,9 +231,9 @@ public sealed class Guardian : Warrior
         "Guardian",
         shieldBonusModifier: 4,
         weaponBonusModifier: 2,
-        new Dice(1, 8, 0),
-        new Dice(2, 12, 2),
-        new Dice(2, 8, 1),
+        new Dice(1, 12, 0),
+        new Dice(1, 20, 1),
+        new Dice(1, 8, 3),
         150,
         75)
     {
@@ -252,7 +255,7 @@ public sealed class Guardian : Warrior
         if (powerShieldAttack)
         {
             Console.WriteLine(
-                $"{UnitName} multiplied their weapon damage by {PowerShieldAttackMultiplier} for this shield attack!\n");
+                $"{UnitName} succeeded a Power Shield Attack check (Guardian ability) which multiplied their weapon damage by {PowerShieldAttackMultiplier} for this shield attack check!\n");
             UpdateDamageDiceModifier(WeaponBonusModifier * PowerShieldAttackMultiplier);
         }
 
