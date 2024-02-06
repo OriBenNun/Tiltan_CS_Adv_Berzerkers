@@ -23,6 +23,8 @@ public abstract class Siege : Unit
     // Has 65% chance to double attack if damage rolled more than the target after the first attack
     protected override void Attack(Unit target)
     {
+        if (GetIsDead()) { return; }
+
         base.Attack(target);
 
         Console.WriteLine($"{UnitName} is checking for a Siege double attack");
@@ -125,6 +127,8 @@ public sealed class Tank : Siege
     // Tank special ability => Has 25% chance to deal a triple attack instead of the siege double attack (if succeed)
     protected override void Attack(Unit target)
     {
+        if (GetIsDead()) { return; }
+        
         if (RandomChanceChecker.DidChanceSucceed(CriticalHitChance))
         {
             Console.WriteLine($"{UnitName} succeed a triple attack check and will attack {target.UnitName} three times!\n");

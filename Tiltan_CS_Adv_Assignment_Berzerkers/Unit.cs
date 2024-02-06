@@ -69,11 +69,6 @@ public abstract class Unit
 
     public void Fight(Unit target)
     {
-        if (target.GetIsDead())
-        {
-            return;
-        }
-        
         Attack(target);
     }
 
@@ -142,10 +137,16 @@ public abstract class Unit
             Console.WriteLine($"{UnitName} tried to attack itself! aborting action.");
             return;
         }
-
+        
         if (_isDead)
         {
             Console.WriteLine($"{UnitName} tried to attack but they're dead! aborting action.");
+            return;
+        }
+        
+        if (target.GetIsDead())
+        {
+            Console.WriteLine($"{UnitName} tried to attack {target.UnitName} but they're already dead! aborting action.");
             return;
         }
         
