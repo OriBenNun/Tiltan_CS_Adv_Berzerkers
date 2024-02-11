@@ -18,31 +18,39 @@ namespace Tiltan_CS_Adv_Assignment_Berzerkers
             
             // UnitWeatherTest();
 
-            FightTest();
+            WarTest();
         }
 
-        private static void FightTest()
+        private static void WarTest()
         {
+            const uint startingResources = 100;
+            
             var teamA = new List<Unit>
             {
-                new Barbarian(),
-                new Knight(),
-                new Rebel(),
-                new Paladin()
+                new Paladin("Koko"),
+                new Guardian("Bit Tony"),
+                new Guardian("Little Tony"),
+                new Rebel("Martin"),
+                new Rebel("lae'zel"),
             };
 
+            var player1 = new Player("Shadowheart", teamA, startingResources, Race.Elf);
+            
             var teamB = new List<Unit>
             {
-                new Giant(),
-                new UnderTaker(),
-                new SoulBreaker(),
-                new Guardian(),
-                new Tank()
+                new Giant("Lombo"),
+                new Giant("Combo"),
+                new Barbarian("Roku"),
+                new Barbarian("Ron"),
+                new Knight("Don Kishot"),
+                new Knight("Harry"),
             };
 
+            var player2 = new Player("Gale", teamB, startingResources, Race.Human);
+            
             var gm = new GameManager();
 
-            gm.UnitsFight(teamA, teamB);
+            gm.PlayersWar(player1, player2);
         }
 
         private static void DiceTest()

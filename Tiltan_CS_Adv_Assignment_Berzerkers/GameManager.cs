@@ -8,8 +8,20 @@ public class GameManager
 
     private int _currentWeatherRoundsCounter;
     private Weather _currentWeather = Weather.None;
-    
-    public void UnitsFight(List<Unit> teamA, List<Unit> teamB)
+
+    public void PlayersWar(Player player1, Player player2)
+    {
+        Console.WriteLine($"Two brave players have showed up for this upcoming war!\n\n" +
+                          $"Player #1 Information:\n" +
+                          $"{player1}\n\n" +
+                          $"Player #2 Information:\n" +
+                          $"{player2}\n\n" +
+                          $"LET THE WAR BEGIN!!");
+        
+        UnitsFight(player1.Units, player2.Units);
+    }
+
+    private void UnitsFight(List<Unit> teamA, List<Unit> teamB)
     {
         Console.WriteLine($"-------THE FIGHT HAS STARTED-------");
         var roundCounter = 1;
@@ -20,7 +32,7 @@ public class GameManager
         {
             Console.WriteLine($"\n\nRound #{roundCounter} started.\n\n" +
                               $"Team A units alive: {liveUnitsCountTeamA} | " +
-                              $"Team B units alive: {liveUnitsCountTeamB}");
+                              $"Team B units alive: {liveUnitsCountTeamB}\n");
 
             if (_currentWeatherRoundsCounter == 0)
             {
@@ -38,13 +50,27 @@ public class GameManager
             liveUnitsCountTeamB = GetAliveUnitsCount(teamB);
             roundCounter++;
         }
+        
+        // Handling the edge case where the 2 teams has no live units left (most likely because of a weather event)
+        if (liveUnitsCountTeamA == 0 && liveUnitsCountTeamB == 0)
+        {
+            Console.WriteLine($"\n\nThe fight is over at round #{roundCounter}!\n" +
+                              $"The two teams has no live unit left!\n" +
+                              $"Therefore, the fight ended with no winner. Only losers.\n" +
+                              $"-------THE FIGHT IS OVER-------");
+            return;
+        }
 
-        var winnerString = liveUnitsCountTeamA == 0 ? "Team B" : "Team A";
-        var winnerTeamAliveCount = liveUnitsCountTeamA == 0 ? liveUnitsCountTeamB : liveUnitsCountTeamA;
+        var isTeamAWinner = liveUnitsCountTeamA > 0;
+        var aliveUnitsWinnerTeam = GetAliveUnitsList(isTeamAWinner ? teamA : teamB);
+
+        var winnerString = isTeamAWinner ? "Team A" : "Team B";
+        var winnerTeamAliveCount = isTeamAWinner ? liveUnitsCountTeamA : liveUnitsCountTeamB;
         // TODO add stealing loot according to the loser resources, and the capacity of the winner's alive units (each steals a random amount if the loser has resources left)
+        
         Console.WriteLine($"\n\nThe fight is over at round #{roundCounter}!\n" +
                           $"The winner is: {winnerString}!!\n" +
-                          $"They won having {winnerTeamAliveCount} alive units left.\n" +
+                          $"They won having {winnerTeamAliveCount} alive unit[s] left.\n" +
                           $"-------THE FIGHT IS OVER-------");
     }
 
