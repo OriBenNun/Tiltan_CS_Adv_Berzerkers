@@ -69,6 +69,7 @@ public abstract class Unit
                $"Capacity: {Capacity}\n" +
                $"Weather Effect: {_currentAffectingWeather}\n";
     }
+    
     public static List<Unit> GetAliveUnitsList(List<Unit> units)
     {
         if (units.Count == 0)
@@ -256,20 +257,18 @@ public abstract class Unit
         Console.WriteLine($"{UnitName} blocked {attacker.UnitName}'s attack!\n");
     }
     
-    protected void UpdateDamageDiceModifier(int damageModifier, bool isAdditive = false)
+    protected int GetDamageDiceModifier() => DamageDice.Modifier;
+    
+    protected void UpdateDamageDiceModifier(int damageModifier)
     {
         var originalDamage = DamageDice;
-        var newModifier = isAdditive ? originalDamage.Modifier + damageModifier : damageModifier;
-        
-        DamageDice = new Dice(originalDamage.Scalar, originalDamage.BaseDie, newModifier);
+        DamageDice = new Dice(originalDamage.Scalar, originalDamage.BaseDie, damageModifier);
     }
 
-    protected void UpdateDefenseDiceModifier(int defenseModifier, bool isAdditive = false)
+    protected void UpdateDefenseDiceModifier(int defenseModifier)
     {
         var originalDefense = DefenseDice;
-        var newModifier = isAdditive ? originalDefense.Modifier + defenseModifier : defenseModifier;
-        
-        DefenseDice = new Dice(originalDefense.Scalar, originalDefense.BaseDie, newModifier);
+        DefenseDice = new Dice(originalDefense.Scalar, originalDefense.BaseDie, defenseModifier);
     }
     
     private void UpdateHitChanceDiceModifier(int hitChanceModifier, bool isAdditive = false)
@@ -279,8 +278,6 @@ public abstract class Unit
         
         HitChanceDice = new Dice(originalHitChance.Scalar, originalHitChance.BaseDie, newModifier);
     }
-
-    protected int GetDamageDiceModifier() => DamageDice.Modifier;
 
     private void ResetCurrentWeatherEffect(Weather newWeather = Weather.None)
     {

@@ -11,9 +11,9 @@ public class GameManager
     private int _currentWeatherRoundsCounter;
     private Weather _currentWeather = Weather.None;
 
-    public void PlayersWar(Player player1, Player player2)
+    public void InitTwoPlayersWar(Player player1, Player player2)
     {
-        Console.WriteLine($"Two Brave Players Have Showed Up For An Unbelievable War! May The Best Win!\n\n" +
+        Console.WriteLine($"\nTwo Brave Players Have Showed Up For An Unbelievable War! May The Best Player Win!\n\n" +
                           $"Player #1 Information:\n" +
                           $"{player1}\n\n" +
                           $"Player #2 Information:\n" +
@@ -43,13 +43,14 @@ public class GameManager
                    $"Player #2 Information:\n" +
                    $"{player2}\n\n" +
                    $"THE WAR IS OVER FOR TODAY. LET THE TROOPS REST UNTIL NEXT TIME!";
-        
+
         Console.WriteLine(message);
     }
 
     private void MoveResourcesFromLoserToWinner(Player winner, Player loser)
     {
         var winnerAliveUnits = Unit.GetAliveUnitsList(winner.Units);
+        uint totalStolen = 0;
         foreach (var aliveUnit in winnerAliveUnits)
         {
             var amountToSteal = RandomChanceChecker.GetRandomInteger(aliveUnit.Capacity + 1, 1);
@@ -61,8 +62,12 @@ public class GameManager
                 break;
             }
 
+            totalStolen += stolenResources;
             winner.GainResources(stolenResources);
         }
+
+        Console.WriteLine(
+            $"\n{winner.Name}'s unit[s] stole a total of {totalStolen} resource[s] from {loser.Name} after winning the war!\n");
     }
 
     /// <summary>
@@ -117,7 +122,7 @@ public class GameManager
 
         var winnerString = isTeamAWinner ? "Team A" : "Team B";
         var winnerTeamAliveCount = isTeamAWinner ? liveUnitsCountTeamA : liveUnitsCountTeamB;
-        
+
         Console.WriteLine($"\n\nThe fight is over at round #{roundCounter}!\n" +
                           $"The winner is: {winnerString}!!\n" +
                           $"They won having {winnerTeamAliveCount} alive unit[s] left.\n" +
@@ -140,10 +145,13 @@ public class GameManager
         var randomUnitTeamA = aliveUnitsTeamA[RandomChanceChecker.GetRandomInteger(aliveUnitsTeamA.Count)];
         var randomUnitTeamB = aliveUnitsTeamB[RandomChanceChecker.GetRandomInteger(aliveUnitsTeamB.Count)];
 
+        Console.WriteLine($"\n{randomUnitTeamA.UnitName}'s turn to attack\n");
         randomUnitTeamA.Fight(randomUnitTeamB);
+        
+        Console.WriteLine($"\n{randomUnitTeamB.UnitName}'s turn to attack\n");
         randomUnitTeamB.Fight(randomUnitTeamA);
     }
-    
+
     private static void ApplyWeatherEffectToUnitList(List<Unit> teamA, Weather newWeather)
     {
         teamA.ForEach((unit) => unit.WeatherEffect(newWeather));
