@@ -4,6 +4,8 @@
 
 using System;
 
+namespace Tiltan_CS_Adv_Assignment_Berzerkers;
+
 public abstract class Siege : Unit
 {
     private const int ChanceToDoubleAttack = 65;
@@ -75,12 +77,12 @@ public sealed class Giant : Siege
 public sealed class SoulBreaker : Siege
 {
     public SoulBreaker(string name = null) : base(Race.Gnome,
-            "SoulBreaker",
-            new Dice(1, 20, 3),
-            new Dice(2, 8, 0),
-            new Dice(1, 12, 1),
-            130,
-            9)
+        "SoulBreaker",
+        new Dice(1, 20, 3),
+        new Dice(2, 8, 0),
+        new Dice(1, 12, 1),
+        130,
+        9)
     {
         UnitName = GetFixedName(name, ClassName);
     }
