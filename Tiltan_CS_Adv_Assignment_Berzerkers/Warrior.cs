@@ -73,7 +73,7 @@ public sealed class Barbarian : Warrior
         new Dice(1,10,-2),
         new Dice(2,8,1),
         145,
-        60)
+        20)
     {
         UnitName = GetFixedName(name, ClassName);
     }
@@ -99,7 +99,7 @@ public sealed class Knight : Warrior
         new Dice(2,12,2),
         new Dice(1,20,1),
         160,
-        70)
+        25)
     {
         UnitName = GetFixedName(name, ClassName);
     }
@@ -151,7 +151,7 @@ public sealed class Rebel : Warrior
         new Dice(2,6,0),
         new Dice(3,8,2),
         115,
-        25)
+        8)
     {
         UnitName = GetFixedName(name, ClassName);
     }
@@ -193,7 +193,7 @@ public sealed class UnderTaker : Warrior
         new Dice(2, 10, 1),
         new Dice(3, 6, 1),
         150,
-        45)
+        15)
     {
         UnitName = GetFixedName(name, ClassName);
     }
@@ -241,7 +241,7 @@ public sealed class Guardian : Warrior
         new Dice(1, 20, 1),
         new Dice(1, 8, 3),
         150,
-        75)
+        25)
     {
         UnitName = GetFixedName(name, ClassName);
     }

@@ -23,7 +23,7 @@ namespace Tiltan_CS_Adv_Assignment_Berzerkers
 
         private static void WarTest()
         {
-            const uint startingResources = 100;
+            const uint startingResources = 50;
             
             var teamA = new List<Unit>
             {

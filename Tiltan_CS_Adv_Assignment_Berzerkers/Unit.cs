@@ -20,6 +20,7 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 
 public abstract class Unit
 {
@@ -28,13 +29,13 @@ public abstract class Unit
     private const int SunWeatherHitChanceModifierFactor = 4;
     
     public string UnitName { get; protected set; } = "Unit";
+    public int Capacity { get; }
     public int Hp { get; private set; }
     protected string ClassName { get; }
     private Dice DamageDice { get; set; }
     private Dice DefenseDice { get; set; }
     private Dice HitChanceDice { get; set; }
     private Race Race { get; }
-    private int Capacity { get; }
 
     private Weather _currentAffectingWeather = Weather.None;
     
@@ -65,6 +66,49 @@ public abstract class Unit
                $"Hit Chance: {HitChanceDice}\n" +
                $"Capacity: {Capacity}\n" +
                $"Weather Effect: {_currentAffectingWeather}\n";
+    }
+    public static List<Unit> GetAliveUnitsList(List<Unit> units)
+    {
+        if (units.Count == 0)
+        {
+            return null;
+        }
+
+        var aliveUnits = new List<Unit>();
+
+        foreach (var unit in units)
+        {
+            if (unit.GetIsDead())
+            {
+                continue;
+            }
+
+            aliveUnits.Add(unit);
+        }
+
+        return aliveUnits;
+    }
+
+    public static int GetAliveUnitsCount(List<Unit> units)
+    {
+        if (units.Count == 0)
+        {
+            return 0;
+        }
+
+        var counter = 0;
+
+        foreach (var unit in units)
+        {
+            if (unit.GetIsDead())
+            {
+                continue;
+            }
+
+            counter++;
+        }
+
+        return counter;
     }
 
     public void Fight(Unit target)
@@ -101,8 +145,8 @@ public abstract class Unit
                 weatherEffectInfo = "TEMPORARILY loses their defense dice modifier and its scalar also drops to 1";
                 break;
             case Weather.Snowy:
-                // Unit is losing hp equals to third of their capacity (the bigger the unit is the more damage it takes)
-                TakeDamage(Capacity / 3);
+                // Unit is losing hp equals to half of their capacity (the bigger the unit is the more damage it takes)
+                TakeDamage(Capacity / 2);
                 weatherEffectInfo = "Taking damage for an amount equals to third of their capacity";
                 break;
             case Weather.Gusty:
@@ -119,7 +163,7 @@ public abstract class Unit
     
     public int GetUnitDamageRoll() => DamageDice.Roll(UnitName);
     public int GetUnitDefenseRoll() => DefenseDice.Roll(UnitName);
-    public bool GetIsDead() => _isDead;
+    protected bool GetIsDead() => _isDead;
 
     protected static string GetFixedName(string name, string className)
     {

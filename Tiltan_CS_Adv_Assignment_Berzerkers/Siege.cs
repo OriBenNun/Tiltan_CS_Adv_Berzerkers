@@ -57,7 +57,7 @@ public sealed class Giant : Siege
         new Dice(2,12,2),
         new Dice(2,8,-1),
         180,
-        100)
+        32)
     {
         UnitName = GetFixedName(name, ClassName);
     }
@@ -80,7 +80,7 @@ public sealed class SoulBreaker : Siege
             new Dice(2, 8, 0),
             new Dice(1, 12, 1),
             130,
-            25)
+            9)
     {
         UnitName = GetFixedName(name, ClassName);
     }
@@ -111,7 +111,7 @@ public sealed class Tank : Siege
         new Dice(1, 20, 2),
         new Dice(2, 8 ,0),
         210,
-        100)
+        30)
     {
         UnitName = GetFixedName(name, ClassName);
     }
@@ -152,7 +152,7 @@ public sealed class Paladin : Siege
         new Dice(2, 10, 2),
         new Dice(1, 20, 0),
         175,
-        60)
+        17)
     {
         UnitName = GetFixedName(name, ClassName);
     }
