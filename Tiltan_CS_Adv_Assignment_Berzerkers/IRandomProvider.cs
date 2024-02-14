@@ -4,14 +4,14 @@ namespace Tiltan_CS_Adv_Assignment_Berzerkers;
 
 public interface IRandomProvider
 {
-    
+    public int GetRandom(string unitName = "[Unknown Unit]");
 }
 
-public readonly struct Dice : IEquatable<Dice>
+public readonly struct Dice : IEquatable<Dice>, IRandomProvider
 {
-    public uint Scalar { get; }
-    public uint BaseDie { get; }
-    public int Modifier { get; }
+    private uint Scalar { get; }
+    private uint BaseDie { get; }
+    private int Modifier { get; }
 
     public Dice(uint scalar, uint baseDie, int modifier)
     {
@@ -19,19 +19,10 @@ public readonly struct Dice : IEquatable<Dice>
         BaseDie = baseDie;
         Modifier = modifier;
     }
-
-    public int Roll(string unitName = "[Unknown Unit]")
+    
+    public int GetRandom(string unitName = "[Unknown Unit]")
     {
-        var result = 0;
-        
-        for (var i = 0; i < Scalar; i++)
-        {
-            var rollResult = RandomChanceChecker.GetRandomInteger((int)BaseDie + 1, 1);
-            result += rollResult;
-        }
-        
-        Console.WriteLine($"[{unitName}] rolled: {result + Modifier}");
-        return result + Modifier;
+        return Roll(unitName);
     }
 
     public bool Equals(Dice other)
@@ -70,5 +61,19 @@ public readonly struct Dice : IEquatable<Dice>
         }
 
         return $"{Scalar}d{BaseDie} {suffix}";
+    }
+    
+    private int Roll(string unitName)
+    {
+        var result = 0;
+        
+        for (var i = 0; i < Scalar; i++)
+        {
+            var rollResult = RandomChanceChecker.GetRandomInteger((int)BaseDie + 1, 1);
+            result += rollResult;
+        }
+        
+        Console.WriteLine($"[{unitName}] rolled: {result + Modifier}");
+        return result + Modifier;
     }
 }

@@ -10,8 +10,8 @@ public abstract class Siege : Unit
 {
     private const int ChanceToDoubleAttack = 65;
 
-    protected Siege(Race race, string className, Dice damageDice, Dice defenseDice, Dice hitChanceDice, int hp,
-        int capacity) : base(race, className, damageDice, defenseDice, hitChanceDice, hp, capacity)
+    protected Siege(Race race, string className, Dice damage, Dice defense, Dice hitChance, int hp,
+        int capacity) : base(race, className, damage, defense, hitChance, hp, capacity)
     {
     }
 
@@ -162,12 +162,14 @@ public sealed class Paladin : Siege
     // Paladin special ability => upon succeeding the Siege Double Attack - the second attack modifier is tripled
     protected override void SiegeDoubleAttack(Unit target)
     {
-        UpdateDamageDiceModifier(GetDamageDiceModifier() * 3);
+        var originalModifier = DamageRollModifier; 
+        
+        DamageRollModifier = originalModifier * 3;
 
         Console.WriteLine($"{UnitName} is doubling their damage for the Siege second attack!\n");
 
         base.SiegeDoubleAttack(target);
 
-        UpdateDamageDiceModifier(GetDamageDiceModifier() / 3);
+        DamageRollModifier = originalModifier;
     }
 }

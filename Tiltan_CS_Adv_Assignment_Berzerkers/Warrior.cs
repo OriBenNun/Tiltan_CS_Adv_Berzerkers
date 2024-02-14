@@ -16,10 +16,10 @@ public abstract class Warrior : Unit
         race, className, damageDice, defenseDice, hitChanceDice, hp, capacity)
     {
         ShieldBonusModifier = shieldBonusModifier;
-        UpdateDefenseDiceModifier(ShieldBonusModifier);
+        DefenseRollModifier += ShieldBonusModifier;
 
         WeaponBonusModifier = weaponBonusModifier;
-        UpdateDamageDiceModifier(WeaponBonusModifier);
+        DamageRollModifier += WeaponBonusModifier;
     }
 
     public override string ToString()
@@ -213,18 +213,19 @@ public sealed class UnderTaker : Warrior
         if (GetIsDead()) { return; }
 
         var oneShotHit = RandomChanceChecker.DidChanceSucceed(OneShotChance);
-        var originalModifier = GetDamageDiceModifier();
+        var originalModifier = DamageRollModifier;
         if (oneShotHit)
         {
             Console.WriteLine($"{UnitName} is about to kill {target.UnitName} with one shot! DAMN!!\n");
-            UpdateDamageDiceModifier(target.Hp);
+            DamageRollModifier = target.Hp;
         }
 
         base.Attack(target);
 
         // Resets the state
         if (!oneShotHit) return;
-        UpdateDamageDiceModifier(originalModifier);
+        
+        DamageRollModifier = originalModifier;
     }
 }
 
@@ -260,17 +261,19 @@ public sealed class Guardian : Warrior
     protected override void WarriorShieldAttack(Unit target)
     {
         var powerShieldAttack = RandomChanceChecker.DidChanceSucceed(PowerShieldAttackChance);
+        var originalModifier = DamageRollModifier;
         if (powerShieldAttack)
         {
             Console.WriteLine(
                 $"{UnitName} succeeded a Power Shield Attack check (Guardian ability) which multiplied their weapon damage by {PowerShieldAttackMultiplier} for this shield attack check!\n");
-            UpdateDamageDiceModifier(WeaponBonusModifier * PowerShieldAttackMultiplier);
+            DamageRollModifier = WeaponBonusModifier * PowerShieldAttackMultiplier;
         }
 
         base.WarriorShieldAttack(target);
 
         // Resets the state
         if (!powerShieldAttack) return;
-        UpdateDamageDiceModifier(WeaponBonusModifier / PowerShieldAttackMultiplier);
+        
+        DamageRollModifier = originalModifier;
     }
 }
