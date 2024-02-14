@@ -105,6 +105,9 @@ public class GameManager
 
             liveUnitsCountTeamA = Unit.GetAliveUnitsCount(teamA);
             liveUnitsCountTeamB = Unit.GetAliveUnitsCount(teamB);
+
+            Console.WriteLine($"\nRound #{roundCounter} ended.\n");
+            
             roundCounter++;
         }
 
@@ -145,10 +148,10 @@ public class GameManager
         var randomUnitTeamA = aliveUnitsTeamA[RandomChanceChecker.GetRandomInteger(aliveUnitsTeamA.Count)];
         var randomUnitTeamB = aliveUnitsTeamB[RandomChanceChecker.GetRandomInteger(aliveUnitsTeamB.Count)];
 
-        Console.WriteLine($"\n{randomUnitTeamA.UnitName}'s turn to attack\n");
+        Console.WriteLine($"\n[Player 1] {randomUnitTeamA.UnitName}'s turn to attack\n");
         randomUnitTeamA.Fight(randomUnitTeamB);
         
-        Console.WriteLine($"\n{randomUnitTeamB.UnitName}'s turn to attack\n");
+        Console.WriteLine($"\n[Player 2] {randomUnitTeamB.UnitName}'s turn to attack\n");
         randomUnitTeamB.Fight(randomUnitTeamA);
     }
 
