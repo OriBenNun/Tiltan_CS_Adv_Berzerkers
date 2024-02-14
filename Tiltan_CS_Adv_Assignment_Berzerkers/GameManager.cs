@@ -177,3 +177,41 @@ public class GameManager
         TeamBWon,
     }
 }
+
+public static class RandomChanceChecker
+{
+    private static readonly Random Random;
+
+    static RandomChanceChecker()
+    {
+        Random = new Random();
+    }
+
+    public static bool DidChanceSucceed(int chancePercents)
+    {
+        var random = Random.Next(100);
+
+        return random < chancePercents;
+    }
+
+    public static int GetRandomInteger(int maxValueExclusive, int minValueInclusive = 0)
+    {
+        return Random.Next(minValueInclusive, maxValueExclusive);
+    }
+}
+
+public enum Race
+{
+    Human,
+    Gnome,
+    Elf
+}
+
+public enum Weather
+{
+    None,
+    Sunny,
+    Rainy,
+    Snowy,
+    Gusty
+}
