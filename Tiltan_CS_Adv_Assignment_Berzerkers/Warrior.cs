@@ -1,32 +1,276 @@
-﻿namespace Tiltan_CS_Adv_Assignment_Berzerkers
+﻿// ---- C# II (Dor Ben Dor) ----
+// Ori Ben Nun
+// ----------------------------
+
+using System;
+
+namespace Tiltan_CS_Adv_Assignment_Berzerkers;
+
+public abstract class Warrior : Unit
 {
-    public abstract class Warrior : Unit
+    protected int WeaponBonusModifier { get; }
+    private int ShieldBonusModifier { get; }
+
+    protected Warrior(Race race, string className, int shieldBonusModifier, int weaponBonusModifier,
+        Dice damageDice, Dice defenseDice ,Dice hitChanceDice, int hp, int capacity) : base(
+        race, className, damageDice, defenseDice, hitChanceDice, hp, capacity)
     {
-        protected int ShieldBonusModifier { get; set; } = 1;
-        protected int WeaponBonusModifier { get; set; } = 2;
-        public override int Defense => base.Defense + ShieldBonusModifier;
-        public override int Damage => base.Damage + WeaponBonusModifier;
+        ShieldBonusModifier = shieldBonusModifier;
+        UpdateDefenseDiceModifier(ShieldBonusModifier);
 
-        public override void Attack(Unit target)
+        WeaponBonusModifier = weaponBonusModifier;
+        UpdateDamageDiceModifier(WeaponBonusModifier);
+    }
+
+    public override string ToString()
+    {
+        return base.ToString() +
+               "Archetype: Warrior\n" +
+               $"Weapon Bonus Modifier: {WeaponBonusModifier}\n" +
+               $"Shield Bonus Modifier: {ShieldBonusModifier}\n";
+    }
+
+    // Warrior special ability => makes a second shield attack if defense rolling higher than the target after the first attack
+    protected override void Attack(Unit target)
+    {
+        if (GetIsDead()) { return; }
+        
+        base.Attack(target);
+        
+        Console.WriteLine($"{UnitName} is trying to make a warrior shield attack against {target.UnitName}");
+
+        if (GetUnitDefenseRoll() <= target.GetUnitDefenseRoll())
         {
-            base.Attack(target);
-
-            if (Defense <= target.Defense) { return; }
-            
-            ShieldAttack(target);
+            Console.WriteLine($"{UnitName} missed the shield attack against {target.UnitName}");
+            return;
         }
 
-        private void ShieldAttack(Unit target)
+        WarriorShieldAttack(target);
+    }
+
+    protected virtual void WarriorShieldAttack(Unit target)
+    {
+        // If the warrior has no shield, shield attack is canceled
+        if (ShieldBonusModifier <= 0)
         {
-            Attack(target);
+            Console.WriteLine($"{UnitName} doesn't have a shield, so their shield attack against {target.UnitName} is canceled.");
+            return;
+        }
+        
+        Console.WriteLine($"{UnitName} didn't miss the shield attack is attacking {target.UnitName} again");
+
+        UnitBasicUncheckedAttack(target);
+    }
+}
+
+// Barbarian => Human Warrior
+public sealed class Barbarian : Warrior
+{
+    public Barbarian(string name = null) : base(
+        race: Race.Human, 
+        "Barbarian",
+        shieldBonusModifier: 0,
+        weaponBonusModifier: 3,
+        new Dice(2,12,2),
+        new Dice(1,10,-2),
+        new Dice(2,8,1),
+        145,
+        20)
+    {
+        UnitName = GetFixedName(name, ClassName);
+    }
+
+    // Barbarian special ability => can make a second attack even if they has no shield (modifier is 0)
+    protected override void WarriorShieldAttack(Unit target)
+    {
+        UnitBasicUncheckedAttack(target);
+    }
+}
+
+// Knight => Human Warrior
+public sealed class Knight : Warrior
+{
+    private const int HorseAttackChance = 30;
+
+    public Knight(string name = null) : base(
+        race: Race.Human,
+        "Knight",
+        shieldBonusModifier: 2,
+        weaponBonusModifier: 1,
+        new Dice(2, 8,1),
+        new Dice(2,12,2),
+        new Dice(1,20,1),
+        160,
+        25)
+    {
+        UnitName = GetFixedName(name, ClassName);
+    }
+
+    public override string ToString()
+    {
+        return base.ToString() +
+               $"{ClassName} Stats:\n" +
+               $"Horse Attack Chance: {HorseAttackChance}%\n";
+    }
+
+    // Knight special ability => has 30% of making a horse attack as an extra attack (on top of the Warrior Shield Attack)
+    protected override void Attack(Unit target)
+    {
+        if (GetIsDead()) { return; }
+
+        base.Attack(target);
+
+        HorseAttack(target);
+    }
+
+    private void HorseAttack(Unit target)
+    {
+        Console.WriteLine($"{UnitName} is rolling a check for a Horse Attack (Knight ability) against {target.UnitName}\n");
+
+        if (!RandomChanceChecker.DidChanceSucceed(HorseAttackChance))
+        {
+            Console.WriteLine($"{UnitName} failed the Horse Attack check against {target.UnitName}\n");
+            return;
         }
 
-        public override string ToString()
+        Console.WriteLine($"{UnitName} succeed the Horse Attack check and is trying to attack {target.UnitName} again!\n");
+
+        UnitBasicUncheckedAttack(target);
+    }
+}
+
+// Rebel = Elf Warrior
+public sealed class Rebel : Warrior
+{
+    private const int CounterAttackChance = 50;
+
+    public Rebel(string name = null) : base(
+        race: Race.Elf, 
+        "Rebel",
+        shieldBonusModifier: 1,
+        weaponBonusModifier: 2,
+        new Dice(2,10,1),
+        new Dice(2,6,0),
+        new Dice(3,8,2),
+        115,
+        8)
+    {
+        UnitName = GetFixedName(name, ClassName);
+    }
+
+    public override string ToString()
+    {
+        return base.ToString() +
+               $"{ClassName} Stats:\n" +
+               $"Counter Attack Chance: {CounterAttackChance}%\n";
+    }
+
+    // Rebel special ability => has 50% chance to counter attack every time they being attacked
+    protected override void Defend(Unit attacker)
+    {
+        base.Defend(attacker);
+
+        if (!RandomChanceChecker.DidChanceSucceed(CounterAttackChance))
         {
-            return base.ToString() +
-                   $"Melee Unit Stats:\n" +
-                   $"Weapon Bonus Modifier: {WeaponBonusModifier}\n" +
-                   $"Shield Bonus Modifier: {ShieldBonusModifier}\n";
+            return;
         }
+
+        Console.WriteLine($"{UnitName} succeed a counter attack check (Rebel ability) and will try to attack {attacker.UnitName} back!\n");
+
+        UnitBasicUncheckedAttack(attacker);
+    }
+}
+
+// UnderTaker = Gnome Warrior
+public sealed class UnderTaker : Warrior
+{
+    private const int OneShotChance = 10;
+
+    public UnderTaker(string name = null) : base(
+        race: Race.Gnome, 
+        "UnderTaker",
+        shieldBonusModifier: 2,
+        weaponBonusModifier: 2,
+        new Dice(1,8,0),
+        new Dice(2, 10, 1),
+        new Dice(3, 6, 1),
+        150,
+        15)
+    {
+        UnitName = GetFixedName(name, ClassName);
+    }
+
+    public override string ToString()
+    {
+        return base.ToString() +
+               $"{ClassName} Stats:\n" +
+               $"One Shot Attack Chance: {OneShotChance}%\n";
+    }
+
+    // UnderTaker special ability => has small chance (10%) to inta kill (one shot) upon attacking!
+    protected override void Attack(Unit target)
+    {
+        if (GetIsDead()) { return; }
+
+        var oneShotHit = RandomChanceChecker.DidChanceSucceed(OneShotChance);
+        var originalModifier = GetDamageDiceModifier();
+        if (oneShotHit)
+        {
+            Console.WriteLine($"{UnitName} is about to kill {target.UnitName} with one shot! DAMN!!\n");
+            UpdateDamageDiceModifier(target.Hp);
+        }
+
+        base.Attack(target);
+
+        // Resets the state
+        if (!oneShotHit) return;
+        UpdateDamageDiceModifier(originalModifier);
+    }
+}
+
+// Guardian = Elf Warrior
+public sealed class Guardian : Warrior
+{
+    private const int PowerShieldAttackChance = 45;
+    private const int PowerShieldAttackMultiplier = 4;
+
+    public Guardian(string name = null) : base(
+        race: Race.Elf, 
+        "Guardian",
+        shieldBonusModifier: 4,
+        weaponBonusModifier: 2,
+        new Dice(1, 12, 0),
+        new Dice(1, 20, 1),
+        new Dice(1, 8, 3),
+        150,
+        25)
+    {
+        UnitName = GetFixedName(name, ClassName);
+    }
+
+    public override string ToString()
+    {
+        return base.ToString() +
+               $"{ClassName} Stats:\n" +
+               $"Power Shield Attack Chance: {PowerShieldAttackChance}%\n" +
+               $"Power Shield Damage Multiplier: x{PowerShieldAttackMultiplier}\n";
+    }
+
+    // Guardian special ability => Upon making a shield attack - has a 45% to multiply their weapon damage by 4
+    protected override void WarriorShieldAttack(Unit target)
+    {
+        var powerShieldAttack = RandomChanceChecker.DidChanceSucceed(PowerShieldAttackChance);
+        if (powerShieldAttack)
+        {
+            Console.WriteLine(
+                $"{UnitName} succeeded a Power Shield Attack check (Guardian ability) which multiplied their weapon damage by {PowerShieldAttackMultiplier} for this shield attack check!\n");
+            UpdateDamageDiceModifier(WeaponBonusModifier * PowerShieldAttackMultiplier);
+        }
+
+        base.WarriorShieldAttack(target);
+
+        // Resets the state
+        if (!powerShieldAttack) return;
+        UpdateDamageDiceModifier(WeaponBonusModifier / PowerShieldAttackMultiplier);
     }
 }

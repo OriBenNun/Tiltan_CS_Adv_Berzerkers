@@ -40,7 +40,8 @@
         <Reference Include="System.Xml" />
     </ItemGroup>
     <ItemGroup>
-        <Compile Include="Barbarian.cs" />
+        <Compile Include="GameManager.cs" />
+        <Compile Include="Player.cs" />
         <Compile Include="Siege.cs" />
         <Compile Include="Warrior.cs" />
         <Compile Include="Program.cs" />
