@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace Tiltan_CS_Adv_Assignment_Berzerkers
 {

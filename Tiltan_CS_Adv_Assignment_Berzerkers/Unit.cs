@@ -50,7 +50,7 @@ public abstract class Unit
 
     protected int DamageRollModifier { get; set; }
     protected int DefenseRollModifier { get; set; }
-    protected int HitChanceRollModifier { get; set; }
+    private int HitChanceRollModifier { get; set; }
 
     protected Unit(Race race, string className, IRandomProvider damage, IRandomProvider defense,
         IRandomProvider hitChance, int hp, int capacity)
