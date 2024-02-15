@@ -53,24 +53,4 @@ internal class Program
         
         gm.InitTwoPlayersWar(player1, player2);
     }
-    
-    private static void BagTest()
-    {
-        var b = new Bag(4, 10);
-
-        b.GetRandom();
-        b.GetRandom();
-        b.GetRandom();
-        b.GetRandom();
-        b.GetRandom();
-        b.GetRandom();
-        b.GetRandom();
-        b.GetRandom();
-        b.GetRandom();
-        b.GetRandom();
-        b.GetRandom();
-        b.GetRandom();
-
-        Console.WriteLine(b);
-    }
 }
