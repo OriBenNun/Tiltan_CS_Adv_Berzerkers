@@ -12,8 +12,8 @@ public abstract class Warrior : Unit
     private int ShieldBonusModifier { get; }
 
     protected Warrior(Race race, string className, int shieldBonusModifier, int weaponBonusModifier,
-        Dice damageDice, Dice defenseDice ,Dice hitChanceDice, int hp, int capacity) : base(
-        race, className, damageDice, defenseDice, hitChanceDice, hp, capacity)
+        IRandomProvider damage, IRandomProvider defense ,IRandomProvider hitChance, int hp, int capacity) : base(
+        race, className, damage, defense, hitChance, hp, capacity)
     {
         ShieldBonusModifier = shieldBonusModifier;
         DefenseRollModifier += ShieldBonusModifier;
@@ -72,7 +72,7 @@ public sealed class Barbarian : Warrior
         shieldBonusModifier: 0,
         weaponBonusModifier: 3,
         new Dice(2,12,2),
-        new Dice(1,10,-2),
+        new Bag(6,14),
         new Dice(2,8,1),
         145,
         20)
@@ -151,7 +151,7 @@ public sealed class Rebel : Warrior
         weaponBonusModifier: 2,
         new Dice(2,10,1),
         new Dice(2,6,0),
-        new Dice(3,8,2),
+        new Bag(14,20),
         115,
         8)
     {

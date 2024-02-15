@@ -10,7 +10,7 @@ public abstract class Siege : Unit
 {
     private const int ChanceToDoubleAttack = 65;
 
-    protected Siege(Race race, string className, Dice damage, Dice defense, Dice hitChance, int hp,
+    protected Siege(Race race, string className, IRandomProvider damage, IRandomProvider defense, IRandomProvider hitChance, int hp,
         int capacity) : base(race, className, damage, defense, hitChance, hp, capacity)
     {
     }
@@ -56,7 +56,7 @@ public sealed class Giant : Siege
         Race.Human,
         "Giant",
         new Dice(1,12,0),
-        new Dice(2,12,2),
+        new Bag(10,20),
         new Dice(2,8,-1),
         180,
         32)
@@ -110,8 +110,8 @@ public sealed class Tank : Siege
         Race.Gnome,
         "Tank",
         new Dice(1, 10, 0),
-        new Dice(1, 20, 2),
-        new Dice(2, 8 ,0),
+        new Bag(8,17),
+        new Bag(6,16),
         210,
         30)
     {
