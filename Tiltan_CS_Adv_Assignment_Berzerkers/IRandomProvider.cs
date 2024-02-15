@@ -130,14 +130,14 @@ public readonly struct Bag : IRandomProvider
 
     public override string ToString()
     {
-        return _currentBag.Aggregate("The Bag currently contains the number[s]:\n",
+        return _currentBag.Aggregate("Bag that currently contains the number[s]:\n",
             (total, elem) => total + $"{elem}, ");
     }
     
     private void InitBag()
     {
         ReshuffleBag();
-        Console.WriteLine($"Bag was initialized with numbers between {SmallestNumber} and {BiggestNumber}");
+        // Console.WriteLine($"Bag was initialized with numbers between {SmallestNumber} and {BiggestNumber}");
     }
 
     private uint PickFromTopOfBag(string unitName)
