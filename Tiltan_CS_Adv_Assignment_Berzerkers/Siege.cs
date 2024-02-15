@@ -10,8 +10,8 @@ public abstract class Siege : Unit
 {
     private const int ChanceToDoubleAttack = 65;
 
-    protected Siege(Race race, string className, Dice damageDice, Dice defenseDice, Dice hitChanceDice, int hp,
-        int capacity) : base(race, className, damageDice, defenseDice, hitChanceDice, hp, capacity)
+    protected Siege(Race race, string className, IRandomProvider damage, IRandomProvider defense, IRandomProvider hitChance, int hp,
+        int capacity) : base(race, className, damage, defense, hitChance, hp, capacity)
     {
     }
 
@@ -56,7 +56,7 @@ public sealed class Giant : Siege
         Race.Human,
         "Giant",
         new Dice(1,12,0),
-        new Dice(2,12,2),
+        new Bag(10,20),
         new Dice(2,8,-1),
         180,
         32)
@@ -110,8 +110,8 @@ public sealed class Tank : Siege
         Race.Gnome,
         "Tank",
         new Dice(1, 10, 0),
-        new Dice(1, 20, 2),
-        new Dice(2, 8 ,0),
+        new Bag(8,17),
+        new Bag(6,16),
         210,
         30)
     {
@@ -162,12 +162,14 @@ public sealed class Paladin : Siege
     // Paladin special ability => upon succeeding the Siege Double Attack - the second attack modifier is tripled
     protected override void SiegeDoubleAttack(Unit target)
     {
-        UpdateDamageDiceModifier(GetDamageDiceModifier() * 3);
+        var originalModifier = DamageRollModifier; 
+        
+        DamageRollModifier = originalModifier * 3;
 
         Console.WriteLine($"{UnitName} is doubling their damage for the Siege second attack!\n");
 
         base.SiegeDoubleAttack(target);
 
-        UpdateDamageDiceModifier(GetDamageDiceModifier() / 3);
+        DamageRollModifier = originalModifier;
     }
 }

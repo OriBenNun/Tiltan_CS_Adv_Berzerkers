@@ -3,6 +3,7 @@
 // ----------------------------
 
 #region Classes Overview
+
 // Humans:
 // Giant => Human Siege
 // Barbarian => Human Warrior
@@ -17,6 +18,7 @@
 // Paladin => Elf Siege
 // Rebel => Elf Warrior
 // Guardian => Elf Warrior 
+
 #endregion
 
 using System;
@@ -28,48 +30,53 @@ public abstract class Unit
 {
     private const int MinRollToHitTargetDefenseFactor = 2;
     private const int MinRollToBlockDefenseFactor = 2;
-    private const int SunWeatherHitChanceModifierFactor = 4;
     
+    private const int RainyWeatherDefenseModifierEffect = -3;
+    private const int GustyWeatherDamageModifierEffect = 5;
+    private const int SunnyWeatherHitChanceModifierEffect = 4;
+
     public string UnitName { get; protected set; } = "Unit";
     public int Capacity { get; }
     public int Hp { get; private set; }
     protected string ClassName { get; }
-    private Dice DamageDice { get; set; }
-    private Dice DefenseDice { get; set; }
-    private Dice HitChanceDice { get; set; }
+    private IRandomProvider Damage { get; set; }
+    private IRandomProvider Defense { get; set; }
+    private IRandomProvider HitChance { get; set; }
     private Race Race { get; }
 
     private Weather _currentAffectingWeather = Weather.None;
-    
+
     private bool _isDead;
 
-    private Dice _weatherCacheDice;
+    protected int DamageRollModifier { get; set; }
+    protected int DefenseRollModifier { get; set; }
+    protected int HitChanceRollModifier { get; set; }
 
-    protected Unit(Race race, string className, Dice damageDice, Dice defenseDice, Dice hitChanceDice, int hp, int capacity)
+    protected Unit(Race race, string className, IRandomProvider damage, IRandomProvider defense,
+        IRandomProvider hitChance, int hp, int capacity)
     {
         Race = race;
         ClassName = className;
-        DamageDice = damageDice;
-        DefenseDice = defenseDice;
-        HitChanceDice = hitChanceDice;
+        Damage = damage;
+        Defense = defense;
+        HitChance = hitChance;
         Hp = hp;
         Capacity = capacity;
     }
 
     public override string ToString()
     {
-        return $"\nUnit Stats:\n" +
-               $"Unit Name: {UnitName}\n" +
+        return $"Unit Name: {UnitName}\n" +
                $"Class Type: {ClassName}\n" +
                $"Race: {Race}\n" +
                $"Hp: {Hp}\n" +
-               $"Defense: {DefenseDice}\n" +
-               $"Damage: {DamageDice}\n" +
-               $"Hit Chance: {HitChanceDice}\n" +
+               $"Defense: {Defense}\n" +
+               $"Damage: {Damage}\n" +
+               $"Hit Chance: {HitChance}\n" +
                $"Capacity: {Capacity}\n" +
                $"Weather Effect: {_currentAffectingWeather}\n";
     }
-    
+
     public static List<Unit> GetAliveUnitsList(List<Unit> units)
     {
         if (units.Count == 0)
@@ -122,7 +129,7 @@ public abstract class Unit
     public void WeatherEffect(Weather weather)
     {
         var didEffectChangedText = _currentAffectingWeather == weather ? "still" : "now";
-        
+
         if (_currentAffectingWeather != Weather.None)
         {
             ResetCurrentWeatherEffect(weather);
@@ -131,21 +138,20 @@ public abstract class Unit
         _currentAffectingWeather = weather;
 
         string weatherEffectInfo;
-        
+
         switch (_currentAffectingWeather)
         {
             case Weather.None:
                 return;
             case Weather.Sunny:
-                // Unit is temporarily gained SunWeatherHitChanceModifierFactor to its hit chance dice modifier
-                UpdateHitChanceDiceModifier(SunWeatherHitChanceModifierFactor, true);
-                weatherEffectInfo = $"TEMPORARILY receives +{SunWeatherHitChanceModifierFactor} to their hit chance modifier";
+                // Unit is temporarily gaining +4 point to their hit chance rolls (modifier)
+                HitChanceRollModifier += SunnyWeatherHitChanceModifierEffect;
+                weatherEffectInfo = $"TEMPORARILY adding {SunnyWeatherHitChanceModifierEffect} points to its hit chance rolls";
                 break;
             case Weather.Rainy:
-                // Unit is temporarily losing its defense dice modifier + the scalar drops to 1
-                _weatherCacheDice = DefenseDice;
-                DefenseDice = new Dice(1, DefenseDice.BaseDie, 0);
-                weatherEffectInfo = "TEMPORARILY loses their defense dice modifier and its scalar also drops to 1";
+                // Unit is losing temporarily -3 points from their defense rolls (modifier) 
+                DefenseRollModifier += RainyWeatherDefenseModifierEffect;
+                weatherEffectInfo = $"TEMPORARILY loses {RainyWeatherDefenseModifierEffect} points from their defense rolls.";
                 break;
             case Weather.Snowy:
                 // Unit is losing hp equals to half of their capacity (the bigger the unit is the more damage it takes)
@@ -153,21 +159,22 @@ public abstract class Unit
                 weatherEffectInfo = "Taking damage for an amount equals to third of their capacity";
                 break;
             case Weather.Gusty:
-                // Unit is temporarily gaining +1 to its damage dice scalar
-                _weatherCacheDice = DamageDice;
-                DamageDice = new Dice(DamageDice.Scalar + 1, DamageDice.BaseDie, DamageDice.Modifier);
-                weatherEffectInfo = "TEMPORARILY gaining +1 to its damage dice scalar";
+                // Unit is temporarily gaining +5 to its damage rolls (modifier)
+                DamageRollModifier += GustyWeatherDamageModifierEffect;
+                weatherEffectInfo = $"TEMPORARILY adding {GustyWeatherDamageModifierEffect} points to its damage rolls";
                 break;
             default:
                 throw new ArgumentOutOfRangeException(nameof(weather), weather, null);
         }
-        Console.WriteLine($"{_currentAffectingWeather} Weather effect on {UnitName} is {didEffectChangedText} active ({weatherEffectInfo})");
-    }
-    
-    public int GetUnitDamageRoll() => DamageDice.Roll(UnitName);
-    public int GetUnitDefenseRoll() => DefenseDice.Roll(UnitName);
-    protected bool GetIsDead() => _isDead;
 
+        Console.WriteLine(
+            $"{_currentAffectingWeather} Weather effect on {UnitName} is {didEffectChangedText} active ({weatherEffectInfo})");
+    }
+
+    public int GetUnitDamageRoll() => Damage.GetRandom(UnitName) + DamageRollModifier;
+    public int GetUnitDefenseRoll() => Defense.GetRandom(UnitName) + DefenseRollModifier;
+    private int GetUnitHitChanceRoll() => HitChance.GetRandom(UnitName) + HitChanceRollModifier;
+    protected bool GetIsDead() => _isDead;
     protected static string GetFixedName(string name, string className)
     {
         var fixedName = className;
@@ -186,24 +193,25 @@ public abstract class Unit
             Console.WriteLine($"{UnitName} tried to attack itself! aborting action.");
             return;
         }
-        
+
         if (_isDead)
         {
             Console.WriteLine($"{UnitName} tried to attack but they're dead! aborting action.");
             return;
         }
-        
+
         if (target.GetIsDead())
         {
-            Console.WriteLine($"{UnitName} tried to attack {target.UnitName} but they're already dead! aborting action.");
+            Console.WriteLine(
+                $"{UnitName} tried to attack {target.UnitName} but they're already dead! aborting action.");
             return;
         }
-        
+
         Console.WriteLine($"{UnitName} is rolling an hit check against {target.UnitName}");
 
         var minRollToHit = target.GetUnitDefenseRoll() / MinRollToHitTargetDefenseFactor;
 
-        if (HitChanceDice.Roll(UnitName) < minRollToHit)
+        if (GetUnitHitChanceRoll() < minRollToHit)
         {
             Console.WriteLine($"{UnitName} missed the hit against {target.UnitName}!\n");
             return;
@@ -213,7 +221,7 @@ public abstract class Unit
 
         target.Defend(this);
     }
-    
+
     // This method is used by the unit classes to be able to "go around" their archetype Attack overriden method, when needed  
     protected void UnitBasicUncheckedAttack(Unit target)
     {
@@ -228,7 +236,7 @@ public abstract class Unit
             Console.WriteLine($"{UnitName} tried to attack but they're dead! aborting action.");
             return;
         }
-        
+
         target.Defend(this);
     }
 
@@ -257,55 +265,34 @@ public abstract class Unit
         Console.WriteLine($"{UnitName} blocked {attacker.UnitName}'s attack!\n");
     }
     
-    protected int GetDamageDiceModifier() => DamageDice.Modifier;
-    
-    protected void UpdateDamageDiceModifier(int damageModifier)
-    {
-        var originalDamage = DamageDice;
-        DamageDice = new Dice(originalDamage.Scalar, originalDamage.BaseDie, damageModifier);
-    }
-
-    protected void UpdateDefenseDiceModifier(int defenseModifier)
-    {
-        var originalDefense = DefenseDice;
-        DefenseDice = new Dice(originalDefense.Scalar, originalDefense.BaseDie, defenseModifier);
-    }
-    
-    private void UpdateHitChanceDiceModifier(int hitChanceModifier, bool isAdditive = false)
-    {
-        var originalHitChance = HitChanceDice;
-        var newModifier = isAdditive ? originalHitChance.Modifier + hitChanceModifier : hitChanceModifier;
-        
-        HitChanceDice = new Dice(originalHitChance.Scalar, originalHitChance.BaseDie, newModifier);
-    }
-
     private void ResetCurrentWeatherEffect(Weather newWeather = Weather.None)
     {
         if (_currentAffectingWeather != newWeather)
         {
             Console.WriteLine($"{_currentAffectingWeather} Weather effect on {UnitName} is over");
         }
-        switch(_currentAffectingWeather)
+
+        switch (_currentAffectingWeather)
         {
             case Weather.None:
                 // Nothing to Undo
                 break;
             case Weather.Sunny:
-                UpdateHitChanceDiceModifier(-SunWeatherHitChanceModifierFactor, true);
+                HitChanceRollModifier -= SunnyWeatherHitChanceModifierEffect;
                 break;
             case Weather.Rainy:
-                DefenseDice = _weatherCacheDice;
-                // DefenseDice = new Dice(_weatherCacheDice.Scalar, _weatherCacheDice.BaseDie, _weatherCacheDice.Modifier);
+                DefenseRollModifier -= RainyWeatherDefenseModifierEffect;
                 break;
             case Weather.Snowy:
                 // Nothing to Undo
                 break;
             case Weather.Gusty:
-                DamageDice = _weatherCacheDice;
+                DamageRollModifier -= GustyWeatherDamageModifierEffect;
                 break;
             default:
                 throw new ArgumentOutOfRangeException();
         }
+
         _currentAffectingWeather = Weather.None;
     }
 
@@ -325,109 +312,5 @@ public abstract class Unit
     {
         Console.WriteLine($"{UnitName} is dead!\n");
         _isDead = true;
-    }
-}
-
-public enum Race
-{
-    Human,
-    Gnome,
-    Elf
-}
-
-public enum Weather
-{
-    None,
-    Sunny,
-    Rainy,
-    Snowy,
-    Gusty
-}
-
-public readonly struct Dice : IEquatable<Dice>
-{
-    public uint Scalar { get; }
-    public uint BaseDie { get; }
-    public int Modifier { get; }
-
-    public Dice(uint scalar, uint baseDie, int modifier)
-    {
-        Scalar = scalar;
-        BaseDie = baseDie;
-        Modifier = modifier;
-    }
-
-    public int Roll(string unitName = "[Unknown Unit]")
-    {
-        var result = 0;
-        
-        for (var i = 0; i < Scalar; i++)
-        {
-            var rollResult = RandomChanceChecker.GetRandomInteger((int)BaseDie + 1, 1);
-            result += rollResult;
-        }
-        
-        Console.WriteLine($"[{unitName}] rolled: {result + Modifier}");
-        return result + Modifier;
-    }
-
-    public bool Equals(Dice other)
-    {
-        return other.Scalar == Scalar &&
-               other.BaseDie == BaseDie &&
-               other.Modifier == Modifier;
-    }
-
-    // I got some help from ChatGPT to better understand
-    // the bit manipulation principles and operators, and how to use them correctly to end up with a deterministic func
-    public override int GetHashCode()
-    {
-        var hash = 17; // We start with a prime number
-
-        // Using bit-shifting and XOR (^) to combine hash codes and improve distribution.
-        // We use the values' hash codes to avoid operating on 0 or negatives, which can collapse distribution.
-        hash = (hash << 7) ^ Modifier.GetHashCode();
-        hash = (hash << 7) ^ BaseDie.GetHashCode();
-        hash = (hash << 7) ^ Scalar.GetHashCode();
-
-        return hash;
-    }
-
-    public override string ToString()
-    {
-        var suffix = Modifier.ToString();
-        switch (Modifier)
-        {
-            case > 0:
-                suffix = $"+{Modifier}";
-                break;
-            case 0:
-                suffix = "";
-                break;
-        }
-
-        return $"{Scalar}d{BaseDie} {suffix}";
-    }
-}
-
-public static class RandomChanceChecker
-{
-    private static readonly Random Random;
-
-    static RandomChanceChecker()
-    {
-        Random = new Random();
-    }
-
-    public static bool DidChanceSucceed(int chancePercents)
-    {
-        var random = Random.Next(100);
-
-        return random < chancePercents;
-    }
-
-    public static int GetRandomInteger(int maxValueExclusive, int minValueInclusive = 0)
-    {
-        return Random.Next(minValueInclusive, maxValueExclusive);
     }
 }

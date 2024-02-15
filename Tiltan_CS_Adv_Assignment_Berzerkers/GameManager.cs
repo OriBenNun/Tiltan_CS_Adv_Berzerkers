@@ -88,8 +88,8 @@ public class GameManager
         while (liveUnitsCountTeamA > 0 && liveUnitsCountTeamB > 0)
         {
             Console.WriteLine($"\n\nRound #{roundCounter} started.\n\n" +
-                              $"Team A units alive: {liveUnitsCountTeamA} | " +
-                              $"Team B units alive: {liveUnitsCountTeamB}\n");
+                              $"Player 1 unit[s] alive: {liveUnitsCountTeamA} | " +
+                              $"Player 2 unit[s] alive: {liveUnitsCountTeamB}\n");
 
             if (_currentWeatherRoundsCounter == 0)
             {
@@ -105,6 +105,9 @@ public class GameManager
 
             liveUnitsCountTeamA = Unit.GetAliveUnitsCount(teamA);
             liveUnitsCountTeamB = Unit.GetAliveUnitsCount(teamB);
+
+            Console.WriteLine($"\nRound #{roundCounter} ended.\n");
+            
             roundCounter++;
         }
 
@@ -120,7 +123,7 @@ public class GameManager
 
         var isTeamAWinner = liveUnitsCountTeamA > 0;
 
-        var winnerString = isTeamAWinner ? "Team A" : "Team B";
+        var winnerString = isTeamAWinner ? "Player 1" : "Player 2";
         var winnerTeamAliveCount = isTeamAWinner ? liveUnitsCountTeamA : liveUnitsCountTeamB;
 
         Console.WriteLine($"\n\nThe fight is over at round #{roundCounter}!\n" +
@@ -135,7 +138,7 @@ public class GameManager
     {
         if (Unit.GetAliveUnitsCount(teamA) == 0 || Unit.GetAliveUnitsCount(teamB) == 0)
         {
-            Console.WriteLine($"One of the teams has no units alive! aborting the round's fight!");
+            Console.WriteLine($"One of the players has no units alive! aborting the round's fight!");
             return;
         }
 
@@ -144,11 +147,17 @@ public class GameManager
 
         var randomUnitTeamA = aliveUnitsTeamA[RandomChanceChecker.GetRandomInteger(aliveUnitsTeamA.Count)];
         var randomUnitTeamB = aliveUnitsTeamB[RandomChanceChecker.GetRandomInteger(aliveUnitsTeamB.Count)];
+        
+        Console.WriteLine($"\n[Player 1]'s random unit to fight this round:\n" +
+                          $"{randomUnitTeamA}\n");
+        
+        Console.WriteLine($"[Player 2]'s random unit to fight this round:\n" +
+                          $"{randomUnitTeamB}\n\n");
 
-        Console.WriteLine($"\n{randomUnitTeamA.UnitName}'s turn to attack\n");
+        Console.WriteLine($"\n[Player 1] {randomUnitTeamA.UnitName}'s turn to attack\n");
         randomUnitTeamA.Fight(randomUnitTeamB);
         
-        Console.WriteLine($"\n{randomUnitTeamB.UnitName}'s turn to attack\n");
+        Console.WriteLine($"\n[Player 2] {randomUnitTeamB.UnitName}'s turn to attack\n");
         randomUnitTeamB.Fight(randomUnitTeamA);
     }
 
@@ -176,4 +185,42 @@ public class GameManager
         TeamAWon,
         TeamBWon,
     }
+}
+
+public static class RandomChanceChecker
+{
+    private static readonly Random Random;
+
+    static RandomChanceChecker()
+    {
+        Random = new Random();
+    }
+
+    public static bool DidChanceSucceed(int chancePercents)
+    {
+        var random = Random.Next(100);
+
+        return random < chancePercents;
+    }
+
+    public static int GetRandomInteger(int maxValueExclusive, int minValueInclusive = 0)
+    {
+        return Random.Next(minValueInclusive, maxValueExclusive);
+    }
+}
+
+public enum Race
+{
+    Human,
+    Gnome,
+    Elf
+}
+
+public enum Weather
+{
+    None,
+    Sunny,
+    Rainy,
+    Snowy,
+    Gusty
 }
