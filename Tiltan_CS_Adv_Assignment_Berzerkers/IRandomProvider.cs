@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Tiltan_CS_Adv_Assignment_Berzerkers;
 
 public interface IRandomProvider
 {
-    public int GetRandom(string unitName = "[Unknown Unit]");
+    public int GetRandom(string unitName);
 }
 
 public readonly struct Dice : IEquatable<Dice>, IRandomProvider
@@ -28,7 +29,7 @@ public readonly struct Dice : IEquatable<Dice>, IRandomProvider
         Modifier = modifier;
     }
 
-    public int GetRandom(string unitName = "[Unknown Unit]")
+    public int GetRandom(string unitName = "Unknown Actor")
     {
         return Roll(unitName);
     }
@@ -93,49 +94,50 @@ public readonly struct Bag : IRandomProvider
 
     private readonly List<uint> _currentBag;
 
-    public Bag(uint biggestNumber, uint smallestNumber)
+    public Bag()
+    {
+        BiggestNumber = 8;
+        SmallestNumber = 4;
+
+        _currentBag = new List<uint>();
+
+        InitBag();
+    }
+
+    public Bag(uint smallestNumber, uint biggestNumber)
     {
         if (biggestNumber <= smallestNumber)
         {
             Console.WriteLine(
                 $"ATTENTION!! Bag struct was initialized with biggest number that isn't bigger than the smallest number.\n" +
-                $"Changing the biggest number value to be higher by 1 than the smallest number, so the bag functions properly.");
+                $"As a result, the biggest number value will be changed to be higher by 1 than the smallest number," +
+                $" so the Bag functions properly.");
             biggestNumber = smallestNumber + 1;
         }
 
-        BiggestNumber = biggestNumber;
         SmallestNumber = smallestNumber;
+        BiggestNumber = biggestNumber;
 
         _currentBag = new List<uint>();
 
-        ResetBag();
+        InitBag();
     }
 
-    private void ResetBag()
-    {
-        _currentBag.Clear();
-
-        var possibleOutcomes = new List<uint>();
-
-        for (uint i = SmallestNumber; i <= BiggestNumber; i++)
-        {
-            possibleOutcomes.Add(i);
-        }
-
-        for (var i = 0; i < possibleOutcomes.Count; i++)
-        {
-            var randomIndex = RandomChanceChecker.GetRandomInteger(possibleOutcomes.Count);
-            var randomElementToAdd = possibleOutcomes[randomIndex];
-            possibleOutcomes.RemoveAt(randomIndex);
-            _currentBag.Add(randomElementToAdd);
-        }
-        
-        Console.WriteLine($"Bag was reset and reshuffled");
-    }
-
-    public int GetRandom(string unitName = "[Unknown Unit]")
+    public int GetRandom(string unitName = "Unknown Actor")
     {
         return (int)PickFromTopOfBag(unitName);
+    }
+
+    public override string ToString()
+    {
+        return _currentBag.Aggregate("The Bag currently contains the number[s]:\n",
+            (total, elem) => total + $"{elem}, ");
+    }
+    
+    private void InitBag()
+    {
+        ReshuffleBag();
+        Console.WriteLine($"Bag was initialized with numbers between {SmallestNumber} and {BiggestNumber}");
     }
 
     private uint PickFromTopOfBag(string unitName)
@@ -144,12 +146,41 @@ public readonly struct Bag : IRandomProvider
         {
             ResetBag();
         }
-        
+
         var result = _currentBag[0];
         _currentBag.RemoveAt(0);
-        
+
         Console.WriteLine($"[{unitName}] picked from bag: {result}");
 
         return result;
+    }
+
+    private void ResetBag()
+    {
+        _currentBag.Clear();
+
+        ReshuffleBag();
+
+        Console.WriteLine($"Bag was reset and reshuffled");
+    }
+
+    private void ReshuffleBag()
+    {
+        var possibleOutcomes = new List<uint>();
+
+        for (uint i = SmallestNumber; i <= BiggestNumber; i++)
+        {
+            possibleOutcomes.Add(i);
+        }
+
+        var cycles = possibleOutcomes.Count;
+
+        for (var i = 0; i < cycles; i++)
+        {
+            var randomIndex = RandomChanceChecker.GetRandomInteger(possibleOutcomes.Count);
+            var randomElementToAdd = possibleOutcomes[randomIndex];
+            possibleOutcomes.RemoveAt(randomIndex);
+            _currentBag.Add(randomElementToAdd);
+        }
     }
 }
