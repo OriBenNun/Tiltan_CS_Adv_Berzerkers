@@ -66,8 +66,7 @@ public abstract class Unit
 
     public override string ToString()
     {
-        return $"\nUnit Stats:\n" +
-               $"Unit Name: {UnitName}\n" +
+        return $"Unit Name: {UnitName}\n" +
                $"Class Type: {ClassName}\n" +
                $"Race: {Race}\n" +
                $"Hp: {Hp}\n" +
@@ -174,6 +173,7 @@ public abstract class Unit
 
     public int GetUnitDamageRoll() => Damage.GetRandom(UnitName) + DamageRollModifier;
     public int GetUnitDefenseRoll() => Defense.GetRandom(UnitName) + DefenseRollModifier;
+    private int GetUnitHitChanceRoll() => HitChance.GetRandom(UnitName) + HitChanceRollModifier;
     protected bool GetIsDead() => _isDead;
     protected static string GetFixedName(string name, string className)
     {
@@ -265,8 +265,6 @@ public abstract class Unit
         Console.WriteLine($"{UnitName} blocked {attacker.UnitName}'s attack!\n");
     }
     
-    private int GetUnitHitChanceRoll() => HitChance.GetRandom(UnitName) + HitChanceRollModifier;
-
     private void ResetCurrentWeatherEffect(Weather newWeather = Weather.None)
     {
         if (_currentAffectingWeather != newWeather)
