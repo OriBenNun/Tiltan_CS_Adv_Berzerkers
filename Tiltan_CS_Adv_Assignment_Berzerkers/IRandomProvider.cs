@@ -14,6 +14,13 @@ public readonly struct Dice : IEquatable<Dice>, IRandomProvider
     private uint BaseDie { get; }
     private int Modifier { get; }
 
+    public Dice()
+    {
+        Scalar = 1;
+        BaseDie = 6;
+        Modifier = 0;
+    }
+
     public Dice(uint scalar, uint baseDie, int modifier)
     {
         Scalar = scalar;
