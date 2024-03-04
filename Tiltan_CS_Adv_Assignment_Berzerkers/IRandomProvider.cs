@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Tiltan_CS_Adv_Assignment_Berzerkers;
-
 public interface IRandomProvider
 {
     public int GetRandom(string unitName);
@@ -14,13 +12,6 @@ public readonly struct Dice : IEquatable<Dice>, IRandomProvider
     private uint Scalar { get; }
     private uint BaseDie { get; }
     private int Modifier { get; }
-
-    public Dice()
-    {
-        Scalar = 1;
-        BaseDie = 6;
-        Modifier = 0;
-    }
 
     public Dice(uint scalar, uint baseDie, int modifier)
     {
@@ -93,16 +84,6 @@ public readonly struct Bag : IRandomProvider
     private uint SmallestNumber { get; }
 
     private readonly List<uint> _currentBag;
-
-    public Bag()
-    {
-        BiggestNumber = 8;
-        SmallestNumber = 4;
-
-        _currentBag = new List<uint>();
-
-        InitBag();
-    }
 
     public Bag(uint smallestNumber, uint biggestNumber)
     {

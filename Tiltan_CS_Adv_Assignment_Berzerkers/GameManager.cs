@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
 
-namespace Tiltan_CS_Adv_Assignment_Berzerkers;
-
 public class GameManager
 {
     private const int WeatherEffectChancePercent = 30;

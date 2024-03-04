@@ -4,7 +4,7 @@
 
 using System;
 
-namespace Tiltan_CS_Adv_Assignment_Berzerkers;
+
 
 public abstract class Warrior : Unit
 {
