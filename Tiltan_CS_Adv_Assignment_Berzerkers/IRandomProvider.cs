@@ -2,12 +2,83 @@
 using System.Collections.Generic;
 using System.Linq;
 
-public interface IRandomProvider
+public interface IRandomProvider<T>
 {
     public int GetRandom(string unitName);
 }
 
-public readonly struct Dice : IEquatable<Dice>, IRandomProvider
+public readonly struct NumberDice : IEquatable<NumberDice>, IRandomProvider<NumberDice>
+{
+    private uint Scalar { get; }
+    private uint BaseDie { get; }
+    private int Modifier { get; }
+
+    public NumberDice(uint scalar, uint baseDie, int modifier)
+    {
+        Scalar = scalar;
+        BaseDie = baseDie;
+        Modifier = modifier;
+    }
+
+    public int GetRandom(string unitName = "Unknown Actor")
+    {
+        return Roll(unitName);
+    }
+
+    public bool Equals(NumberDice other)
+    {
+        return other.Scalar == Scalar &&
+               other.BaseDie == BaseDie &&
+               other.Modifier == Modifier;
+    }
+
+    // I got some help from ChatGPT to better understand
+    // the bit manipulation principles and operators, and how to use them correctly to end up with a deterministic func
+    public override int GetHashCode()
+    {
+        var hash = 17; // We start with a prime number
+
+        // Using bit-shifting and XOR (^) to combine hash codes and improve distribution.
+        // We use the values' hash codes to avoid operating on 0 or negatives, which can collapse distribution.
+        hash = (hash << 7) ^ Modifier.GetHashCode();
+        hash = (hash << 7) ^ BaseDie.GetHashCode();
+        hash = (hash << 7) ^ Scalar.GetHashCode();
+
+        return hash;
+    }
+
+    public override string ToString()
+    {
+        var suffix = Modifier.ToString();
+        switch (Modifier)
+        {
+            case > 0:
+                suffix = $"+{Modifier}";
+                break;
+            case 0:
+                suffix = "";
+                break;
+        }
+
+        return $"{Scalar}d{BaseDie} {suffix}";
+    }
+
+    private int Roll(string unitName)
+    {
+        var result = 0;
+
+        for (var i = 0; i < Scalar; i++)
+        {
+            var rollResult = RandomChanceChecker.GetRandomInteger((int)BaseDie + 1, 1);
+            result += rollResult;
+        }
+
+        Console.WriteLine($"[{unitName}] rolled: {result + Modifier}");
+        return result + Modifier;
+    }
+}
+
+public readonly struct Dice<T> : IRandomProvider<T> where T : IComparable<T>
 {
     private uint Scalar { get; }
     private uint BaseDie { get; }
@@ -25,7 +96,7 @@ public readonly struct Dice : IEquatable<Dice>, IRandomProvider
         return Roll(unitName);
     }
 
-    public bool Equals(Dice other)
+    public bool Equals(Dice<T> other)
     {
         return other.Scalar == Scalar &&
                other.BaseDie == BaseDie &&

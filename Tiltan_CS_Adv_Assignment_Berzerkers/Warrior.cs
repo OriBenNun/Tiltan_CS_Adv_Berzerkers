@@ -71,9 +71,9 @@ public sealed class Barbarian : Warrior
         "Barbarian",
         shieldBonusModifier: 0,
         weaponBonusModifier: 3,
-        new Dice(2,12,2),
+        new NumberDice(2,12,2),
         new Bag(6,14),
-        new Dice(2,8,1),
+        new NumberDice(2,8,1),
         145,
         20)
     {
@@ -97,9 +97,9 @@ public sealed class Knight : Warrior
         "Knight",
         shieldBonusModifier: 2,
         weaponBonusModifier: 1,
-        new Dice(2, 8,1),
-        new Dice(2,12,2),
-        new Dice(1,20,1),
+        new NumberDice(2, 8,1),
+        new NumberDice(2,12,2),
+        new NumberDice(1,20,1),
         160,
         25)
     {
@@ -149,8 +149,8 @@ public sealed class Rebel : Warrior
         "Rebel",
         shieldBonusModifier: 1,
         weaponBonusModifier: 2,
-        new Dice(2,10,1),
-        new Dice(2,6,0),
+        new NumberDice(2,10,1),
+        new NumberDice(2,6,0),
         new Bag(14,20),
         115,
         8)
@@ -191,9 +191,9 @@ public sealed class UnderTaker : Warrior
         "UnderTaker",
         shieldBonusModifier: 2,
         weaponBonusModifier: 2,
-        new Dice(1,8,0),
-        new Dice(2, 10, 1),
-        new Dice(3, 6, 1),
+        new NumberDice(1,8,0),
+        new NumberDice(2, 10, 1),
+        new NumberDice(3, 6, 1),
         150,
         15)
     {
@@ -240,9 +240,9 @@ public sealed class Guardian : Warrior
         "Guardian",
         shieldBonusModifier: 4,
         weaponBonusModifier: 2,
-        new Dice(1, 12, 0),
-        new Dice(1, 20, 1),
-        new Dice(1, 8, 3),
+        new NumberDice(1, 12, 0),
+        new NumberDice(1, 20, 1),
+        new NumberDice(1, 8, 3),
         150,
         25)
     {

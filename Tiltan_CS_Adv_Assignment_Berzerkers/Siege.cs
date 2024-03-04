@@ -55,9 +55,9 @@ public sealed class Giant : Siege
     public Giant(string name = null) : base(
         Race.Human,
         "Giant",
-        new Dice(1,12,0),
+        new NumberDice(1,12,0),
         new Bag(10,20),
-        new Dice(2,8,-1),
+        new NumberDice(2,8,-1),
         180,
         32)
     {
@@ -78,9 +78,9 @@ public sealed class SoulBreaker : Siege
 {
     public SoulBreaker(string name = null) : base(Race.Gnome,
         "SoulBreaker",
-        new Dice(1, 20, 3),
-        new Dice(2, 8, 0),
-        new Dice(1, 12, 1),
+        new NumberDice(1, 20, 3),
+        new NumberDice(2, 8, 0),
+        new NumberDice(1, 12, 1),
         130,
         9)
     {
@@ -109,7 +109,7 @@ public sealed class Tank : Siege
     public Tank(string name = null) : base(
         Race.Gnome,
         "Tank",
-        new Dice(1, 10, 0),
+        new NumberDice(1, 10, 0),
         new Bag(8,17),
         new Bag(6,16),
         210,
@@ -150,9 +150,9 @@ public sealed class Paladin : Siege
     public Paladin(string name = null) : base(
         Race.Elf,
         "Paladin",
-        new Dice(1, 20, 1),
-        new Dice(2, 10, 2),
-        new Dice(1, 20, 0),
+        new NumberDice(1, 20, 1),
+        new NumberDice(2, 10, 2),
+        new NumberDice(1, 20, 0),
         175,
         17)
     {
