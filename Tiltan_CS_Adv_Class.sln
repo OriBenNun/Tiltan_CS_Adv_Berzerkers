@@ -4,6 +4,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tiltan_CS_Adv_Assignment_Be
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Generics", "Generics\Generics.csproj", "{D1B9222E-F05E-4469-9D7A-F6AEC5EBBEC1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Enumerables", "Enumerables\Enumerables.csproj", "{4475AAC0-BEE0-4EBA-8162-F033592658E2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,5 +20,9 @@ Global
 		{D1B9222E-F05E-4469-9D7A-F6AEC5EBBEC1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D1B9222E-F05E-4469-9D7A-F6AEC5EBBEC1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D1B9222E-F05E-4469-9D7A-F6AEC5EBBEC1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4475AAC0-BEE0-4EBA-8162-F033592658E2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4475AAC0-BEE0-4EBA-8162-F033592658E2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4475AAC0-BEE0-4EBA-8162-F033592658E2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4475AAC0-BEE0-4EBA-8162-F033592658E2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
