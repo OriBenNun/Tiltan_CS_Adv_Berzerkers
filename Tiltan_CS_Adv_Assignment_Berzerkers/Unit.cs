@@ -24,7 +24,7 @@
 using System;
 using System.Collections.Generic;
 
-
+namespace Tiltan_CS_Adv_Assignment_Berzerkers;
 
 public abstract class Unit
 {
@@ -39,9 +39,9 @@ public abstract class Unit
     public int Capacity { get; }
     public int Hp { get; private set; }
     protected string ClassName { get; }
-    private IRandomProvider Damage { get; set; }
-    private IRandomProvider Defense { get; set; }
-    private IRandomProvider HitChance { get; set; }
+    private NumberDice Damage { get; }
+    private NumberDice Defense { get; }
+    private NumberDice HitChance { get; }
     private Race Race { get; }
 
     private Weather _currentAffectingWeather = Weather.None;
@@ -52,8 +52,8 @@ public abstract class Unit
     protected int DefenseRollModifier { get; set; }
     private int HitChanceRollModifier { get; set; }
 
-    protected Unit(Race race, string className, IRandomProvider damage, IRandomProvider defense,
-        IRandomProvider hitChance, int hp, int capacity)
+    protected Unit(Race race, string className, NumberDice damage, NumberDice defense,
+        NumberDice hitChance, int hp, int capacity)
     {
         Race = race;
         ClassName = className;
@@ -171,9 +171,9 @@ public abstract class Unit
             $"{_currentAffectingWeather} Weather effect on {UnitName} is {didEffectChangedText} active ({weatherEffectInfo})");
     }
 
-    public int GetUnitDamageRoll() => Damage.GetRandom(UnitName) + DamageRollModifier;
-    public int GetUnitDefenseRoll() => Defense.GetRandom(UnitName) + DefenseRollModifier;
-    private int GetUnitHitChanceRoll() => HitChance.GetRandom(UnitName) + HitChanceRollModifier;
+    public int GetUnitDamageRoll() => (int)Damage.GetRandom(UnitName) + DamageRollModifier;
+    public int GetUnitDefenseRoll() => (int)Defense.GetRandom(UnitName) + DefenseRollModifier;
+    private int GetUnitHitChanceRoll() => (int)HitChance.GetRandom(UnitName) + HitChanceRollModifier;
     protected bool GetIsDead() => _isDead;
     protected static string GetFixedName(string name, string className)
     {

@@ -3,14 +3,14 @@
 // ----------------------------
 
 using System;
-using Tiltan_CS_Adv_Assignment_Berzerkers;
 
+namespace Tiltan_CS_Adv_Assignment_Berzerkers;
 
 public abstract class Siege : Unit
 {
     private const int ChanceToDoubleAttack = 65;
 
-    protected Siege(Race race, string className, IRandomProvider damage, IRandomProvider defense, IRandomProvider hitChance, int hp,
+    protected Siege(Race race, string className, NumberDice damage, NumberDice defense, NumberDice hitChance, int hp,
         int capacity) : base(race, className, damage, defense, hitChance, hp, capacity)
     {
     }
@@ -56,7 +56,7 @@ public sealed class Giant : Siege
         Race.Human,
         "Giant",
         new NumberDice(1,12,0),
-        new Bag(10,20),
+        new NumberDice(2,8, 2),
         new NumberDice(2,8,-1),
         180,
         32)
@@ -110,8 +110,8 @@ public sealed class Tank : Siege
         Race.Gnome,
         "Tank",
         new NumberDice(1, 10, 0),
-        new Bag(8,17),
-        new Bag(6,16),
+        new NumberDice(2,8, 2),
+        new NumberDice(1,12, 0),
         210,
         30)
     {

@@ -3,8 +3,8 @@
 // ----------------------------
 
 using System;
-using Tiltan_CS_Adv_Assignment_Berzerkers;
 
+namespace Tiltan_CS_Adv_Assignment_Berzerkers;
 
 public abstract class Warrior : Unit
 {
@@ -12,7 +12,7 @@ public abstract class Warrior : Unit
     private int ShieldBonusModifier { get; }
 
     protected Warrior(Race race, string className, int shieldBonusModifier, int weaponBonusModifier,
-        IRandomProvider damage, IRandomProvider defense ,IRandomProvider hitChance, int hp, int capacity) : base(
+        NumberDice damage, NumberDice defense ,NumberDice hitChance, int hp, int capacity) : base(
         race, className, damage, defense, hitChance, hp, capacity)
     {
         ShieldBonusModifier = shieldBonusModifier;
@@ -72,7 +72,7 @@ public sealed class Barbarian : Warrior
         shieldBonusModifier: 0,
         weaponBonusModifier: 3,
         new NumberDice(2,12,2),
-        new Bag(6,14),
+        new NumberDice(2,6, 1),
         new NumberDice(2,8,1),
         145,
         20)
@@ -151,7 +151,7 @@ public sealed class Rebel : Warrior
         weaponBonusModifier: 2,
         new NumberDice(2,10,1),
         new NumberDice(2,6,0),
-        new Bag(14,20),
+        new NumberDice(2,12, 1),
         115,
         8)
     {
