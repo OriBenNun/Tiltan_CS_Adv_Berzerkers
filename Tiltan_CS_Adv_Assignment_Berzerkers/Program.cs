@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Tiltan_CS_Adv_Assignment_Berzerkers
 {
@@ -6,7 +7,22 @@ namespace Tiltan_CS_Adv_Assignment_Berzerkers
     {
         public static void Main(string[] args)
         {
-            StartNewWar();
+            var deck = new Deck<int>(40);
+
+            for (int i = 0; i < 40; i++)
+            {
+                var randomValue = RandomChanceChecker.GetRandomInteger(21, 1);
+                deck.InjectValue(randomValue, i);
+            }
+            
+            deck.PrintDeck();
+            
+            deck.Shuffle();
+            Console.WriteLine("Deck has been shuffled?");
+            
+            deck.PrintDeck();
+
+            // StartNewWar();
         }
 
         private static void StartNewWar()

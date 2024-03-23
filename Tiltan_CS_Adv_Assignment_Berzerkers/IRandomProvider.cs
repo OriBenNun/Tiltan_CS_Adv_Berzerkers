@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Tiltan_CS_Adv_Assignment_Berzerkers;
 
@@ -20,8 +19,6 @@ public class NumberDice : Dice<uint>
         {
             InjectValue((uint)((i + 1) * Scalar + Modifier), i);
         }
-
-        
     }
 
     public override uint GetRandom(string unitName) => NumberDiceRoll(unitName);
@@ -93,7 +90,7 @@ public class Dice<T> where T : IComparable<T>
         return Roll();
     }
     
-    protected void InjectValue(T val, int index)
+    public void InjectValue(T val, int index)
     {
         if (index < 0 || index >= DiceFaces.Length)
         {
@@ -111,90 +108,62 @@ public class Dice<T> where T : IComparable<T>
     
 }
 
-public readonly struct Deck<T> where T : struct, IComparable<T>
+public class Deck<T> where T : struct, IComparable<T>
 {
-    private uint BiggestNumber { get; }
-    private uint SmallestNumber { get; }
-
-    private readonly List<uint> _currentBag;
-
-    public Deck(uint smallestNumber, uint biggestNumber)
+    private List<T> _availableCards;
+    private List<T> _discardedCards = new();
+    public Deck(int size)
     {
-        if (biggestNumber <= smallestNumber)
+        _availableCards = new List<T>();
+
+        for (var i = 0; i < size; i++)
         {
-            Console.WriteLine(
-                $"ATTENTION!! Bag struct was initialized with biggest number that isn't bigger than the smallest number.\n" +
-                $"As a result, the biggest number value will be changed to be higher by 1 than the smallest number," +
-                $" so the Bag functions properly.");
-            biggestNumber = smallestNumber + 1;
+            _availableCards.Add(new T());
         }
-
-        SmallestNumber = smallestNumber;
-        BiggestNumber = biggestNumber;
-
-        _currentBag = new List<uint>();
-
-        InitBag();
-    }
-
-    public int GetRandom(string unitName = "Unknown Actor")
-    {
-        return (int)PickFromTopOfBag(unitName);
-    }
-
-    public override string ToString()
-    {
-        return _currentBag.Aggregate("Bag that currently contains the number[s]:\n",
-            (total, elem) => total + $"{elem}, ");
     }
     
-    private void InitBag()
+    public Deck(List<T> cards)
     {
-        ReshuffleBag();
-        // Console.WriteLine($"Bag was initialized with numbers between {SmallestNumber} and {BiggestNumber}");
+        _availableCards = cards;
+    }
+    
+    public void InjectValue(T val, int index)
+    {
+        if (index < 0 || index >= _availableCards.Count)
+        {
+            throw new IndexOutOfRangeException();
+        }
+        
+        _availableCards[index] = val;
     }
 
-    private uint PickFromTopOfBag(string unitName)
+    public void Shuffle()
     {
-        if (_currentBag.Count == 0)
+        var shuffledList = new List<T>();
+        var availableIndices = new List<int>();
+
+        for (var i = 0; i < _availableCards.Count; i++)
         {
-            ResetBag();
+            availableIndices.Add(i);
         }
 
-        var result = _currentBag[0];
-        _currentBag.RemoveAt(0);
-
-        Console.WriteLine($"[{unitName}] picked from bag: {result}");
-
-        return result;
-    }
-
-    private void ResetBag()
-    {
-        _currentBag.Clear();
-
-        ReshuffleBag();
-
-        Console.WriteLine($"Bag was reset and reshuffled");
-    }
-
-    private void ReshuffleBag()
-    {
-        var possibleOutcomes = new List<uint>();
-
-        for (uint i = SmallestNumber; i <= BiggestNumber; i++)
+        foreach (var _ in _availableCards)
         {
-            possibleOutcomes.Add(i);
+            var randomIndex = RandomChanceChecker.GetRandomInteger(availableIndices.Count);
+            var randomAvailableIndex = availableIndices[randomIndex];
+            availableIndices.RemoveAt(randomIndex);
+
+            shuffledList.Add(_availableCards[randomAvailableIndex]);
         }
 
-        var cycles = possibleOutcomes.Count;
+        _availableCards = shuffledList;
+    }
 
-        for (var i = 0; i < cycles; i++)
+    public void PrintDeck()
+    {
+        foreach (var card in _availableCards)
         {
-            var randomIndex = RandomChanceChecker.GetRandomInteger(possibleOutcomes.Count);
-            var randomElementToAdd = possibleOutcomes[randomIndex];
-            possibleOutcomes.RemoveAt(randomIndex);
-            _currentBag.Add(randomElementToAdd);
+            Console.WriteLine(card.ToString());
         }
     }
 }
