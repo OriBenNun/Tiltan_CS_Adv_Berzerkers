@@ -122,6 +122,8 @@ public class Deck<T> where T : struct, IComparable<T>
     private List<T> _availableCards;
     private readonly List<T> _discardedCards = new();
     private int DeckSize { get; }
+    
+    
     public Deck(int size)
     {
         DeckSize = size;
@@ -136,7 +138,7 @@ public class Deck<T> where T : struct, IComparable<T>
     
     public void InjectValue(T val, int index)
     {
-        if (index < 0 || index >= _availableCards.Count)
+        if (index < 0 || index >= Remaining())
         {
             throw new IndexOutOfRangeException();
         }
@@ -146,7 +148,7 @@ public class Deck<T> where T : struct, IComparable<T>
 
     public bool TryDraw(out T card)
     {
-        if (_availableCards.Count == 0)
+        if (Remaining() == 0)
         {
             card = default;
             return false;
@@ -156,12 +158,22 @@ public class Deck<T> where T : struct, IComparable<T>
         return true;
     }
 
+    public int Size() => DeckSize;
+
+    public void PrintDeck()
+    {
+        foreach (var card in _availableCards)
+        {
+            Console.WriteLine(card.ToString());
+        }
+    }
+    
     private void Shuffle()
     {
         var shuffledList = new List<T>();
         var availableIndices = new List<int>();
 
-        for (var i = 0; i < _availableCards.Count; i++)
+        for (var i = 0; i < Remaining(); i++)
         {
             availableIndices.Add(i);
         }
@@ -176,26 +188,6 @@ public class Deck<T> where T : struct, IComparable<T>
         }
 
         _availableCards = shuffledList;
-    }
-
-    public T Peek()
-    {
-        if (_availableCards.Count != 0) return _availableCards[0];
-        
-        Console.WriteLine("Deck is currently empty. Have you tried reshuffling? Default value will be returned by Peek.");
-        return default;
-    }
-
-    public int Size() => DeckSize;
-
-    public int Remaining() => _availableCards.Count;
-    
-    public void PrintDeck()
-    {
-        foreach (var card in _availableCards)
-        {
-            Console.WriteLine(card.ToString());
-        }
     }
 
     private void ReShuffle()
@@ -214,10 +206,21 @@ public class Deck<T> where T : struct, IComparable<T>
         Shuffle();
     }
     
+    private int Remaining() => _availableCards.Count;
+    
+    private T Peek()
+    {
+        if (Remaining() != 0) return _availableCards[0];
+        
+        Console.WriteLine("Deck is currently empty. Have you tried reshuffling? Default value will be returned by Peek.");
+        return default;
+    }
+    
     private T DrawFromTop()
     {
-        var card = _availableCards[0];
-        _availableCards.RemoveAt(0);
+        var card = Peek();
+        
+        _availableCards.Remove(card);
         _discardedCards.Add(card);
 
         return card;
