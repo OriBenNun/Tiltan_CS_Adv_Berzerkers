@@ -21,7 +21,7 @@ public class NumberDice : Dice<uint>
         }
     }
 
-    public override uint GetRandom(string unitName) => NumberDiceRoll(unitName);
+    public uint GetRandom(string unitName) => NumberDiceRoll(unitName);
 
     public bool Equals(NumberDice other)
     {
@@ -78,18 +78,28 @@ public class NumberDice : Dice<uint>
 
 public class Dice<T> where T : IComparable<T>
 {
-    private T[] DiceFaces { get; set; }
+    private T[] DiceFaces { get; }
     
-    public Dice(T[] diceFaces)
+    public Dice(int baseDie)
+    {
+        DiceFaces = new T[baseDie];
+
+        for (var i = 0; i < baseDie; i++)
+        {
+            DiceFaces[i] = default;
+        }
+    }
+
+    protected Dice(T[] diceFaces)
     {
         DiceFaces = diceFaces;
     }
-
-    public virtual T GetRandom(string unitName)
-    {
-        return Roll();
-    }
     
+    public int Size()
+    {
+        return DiceFaces.Length;
+    }
+
     public void InjectValue(T val, int index)
     {
         if (index < 0 || index >= DiceFaces.Length)
@@ -100,12 +110,11 @@ public class Dice<T> where T : IComparable<T>
         DiceFaces[index] = val;
     }
 
-    private T Roll()
+    public T Roll()
     {
         var randomIndex = RandomChanceChecker.GetRandomInteger(DiceFaces.Length);
         return DiceFaces[randomIndex];
     }
-    
 }
 
 public class Deck<T> where T : struct, IComparable<T>
@@ -137,23 +146,17 @@ public class Deck<T> where T : struct, IComparable<T>
 
     public bool TryDraw(out T card)
     {
-        if (_discardedCards.Count == 0 && _availableCards.Count == 0)
+        if (_availableCards.Count == 0)
         {
             card = default;
             return false;
-        }
-
-        if (_availableCards.Count == 0)
-        {
-            ReShuffle();
-            Console.WriteLine("Deck was reshuffled as it was empty.");
         }
 
         card = DrawFromTop();
         return true;
     }
 
-    public void Shuffle()
+    private void Shuffle()
     {
         var shuffledList = new List<T>();
         var availableIndices = new List<int>();
@@ -194,7 +197,8 @@ public class Deck<T> where T : struct, IComparable<T>
             Console.WriteLine(card.ToString());
         }
     }
-    public void ReShuffle()
+
+    private void ReShuffle()
     {
         if (_discardedCards.Count == 0)
         {

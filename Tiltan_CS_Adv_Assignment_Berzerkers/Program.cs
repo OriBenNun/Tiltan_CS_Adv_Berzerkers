@@ -1,109 +1,73 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Tiltan_CS_Adv_Assignment_Berzerkers
+namespace Tiltan_CS_Adv_Assignment_Berzerkers;
+
+internal class Program
 {
-    internal class Program
+    public static void Main(string[] args)
     {
-        public static void Main(string[] args)
-        {
-            DeckTest();
+        var randomFighter = new RandomFighter();
+        
+        var deck = new Deck<int>(40);
 
-            // StartNewWar();
+        for (var i = 0; i < deck.Size(); i++)
+        {
+            var randomValue = RandomChanceChecker.GetRandomInteger(21, 1);
+            deck.InjectValue(randomValue, i);
         }
 
-        private static void DeckTest()
+        var dice = new Dice<int>(20);
+        
+        for (var i = 0; i < dice.Size(); i++)
         {
-            var deck = new Deck<int>(40);
-
-            for (int i = 0; i < 40; i++)
-            {
-                var randomValue = RandomChanceChecker.GetRandomInteger(21, 1);
-                deck.InjectValue(randomValue, i);
-            }
-
-            int c;
-
-            deck.TryDraw(out c);
-            Console.WriteLine(c);
-            
-            deck.TryDraw(out c);
-            Console.WriteLine(c);
-            
-            deck.TryDraw(out c);
-            Console.WriteLine(c);
-            deck.TryDraw(out c);
-            Console.WriteLine(c);
-            deck.TryDraw(out c);
-            Console.WriteLine(c);
-            deck.TryDraw(out c);
-            Console.WriteLine(c);
-            deck.TryDraw(out c);
-            Console.WriteLine(c);
-            deck.TryDraw(out c);
-            Console.WriteLine(c);
-            deck.TryDraw(out c);
-            Console.WriteLine(c);
-            deck.TryDraw(out c);
-            Console.WriteLine(c);
-            deck.TryDraw(out c);
-            Console.WriteLine(c);
-            deck.TryDraw(out c);
-            Console.WriteLine(c);
-            
-            Console.WriteLine("Finished drawing");
-            
-            deck.PrintDeck();
-            
-            deck.ReShuffle();
-            
-            Console.WriteLine("Deck has been reshuffled");
-            
-            deck.PrintDeck();
+            dice.InjectValue(i, i);
         }
+        
+        randomFighter.Fight(deck, dice);
+    }
 
-        private static void StartNewWar()
+    private static void StartNewBerzerkersWar()
+    {
+        const int maxStartingResources = 80;
+        const int minStartingResources = 40;
+        
+        // Player 1:
+
+        var teamAStartingResources =
+            RandomChanceChecker.GetRandomInteger(maxStartingResources + 1, minStartingResources);
+        var teamA = new List<Unit>
         {
-            const int maxStartingResources = 80;
-            const int minStartingResources = 40;
-        
-            // Player 1:
+            new Paladin("LichKing"),
+            new Guardian("Lombo"),
+            new Guardian("Combo"),
+            new Rebel("Martin"),
+            new Rebel("Lae'zel"),
+        };
 
-            var teamAStartingResources =
-                RandomChanceChecker.GetRandomInteger(maxStartingResources + 1, minStartingResources);
-            var teamA = new List<Unit>
-            {
-                new Paladin("LichKing"),
-                new Guardian("Lombo"),
-                new Guardian("Combo"),
-                new Rebel("Martin"),
-                new Rebel("Lae'zel"),
-            };
+        var player1 = new Player("Shadowheart", teamA, (uint)teamAStartingResources, Race.Elf);
 
-            var player1 = new Player("Shadowheart", teamA, (uint)teamAStartingResources, Race.Elf);
+        // Player 2:
+        
+        var teamBStartingResources =
+            RandomChanceChecker.GetRandomInteger(maxStartingResources + 1, minStartingResources);
+        
+        var teamB = new List<Unit>
+        {
+            new Giant("Big-Tony"),
+            new Giant("Lil-Tony"),
+            new Barbarian("Roku"),
+            new Barbarian("Ron"),
+            new Knight("Don Kishot"),
+            new Knight("Harry"),
+        };
 
-            // Player 2:
+        var player2 = new Player("Gale", teamB, (uint)teamBStartingResources, Race.Human);
         
-            var teamBStartingResources =
-                RandomChanceChecker.GetRandomInteger(maxStartingResources + 1, minStartingResources);
-        
-            var teamB = new List<Unit>
-            {
-                new Giant("Big-Tony"),
-                new Giant("Lil-Tony"),
-                new Barbarian("Roku"),
-                new Barbarian("Ron"),
-                new Knight("Don Kishot"),
-                new Knight("Harry"),
-            };
+        // GameManager and War initialization:
 
-            var player2 = new Player("Gale", teamB, (uint)teamBStartingResources, Race.Human);
+        var gm = new GameManager();
         
-            // GameManager and War initialization:
-
-            var gm = new GameManager();
-        
-            gm.InitTwoPlayersWar(player1, player2);
-        }
+        gm.InitTwoPlayersWar(player1, player2);
     }
 }
