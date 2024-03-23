@@ -7,6 +7,13 @@ namespace Tiltan_CS_Adv_Assignment_Berzerkers
     {
         public static void Main(string[] args)
         {
+            DeckTest();
+
+            // StartNewWar();
+        }
+
+        private static void DeckTest()
+        {
             var deck = new Deck<int>(40);
 
             for (int i = 0; i < 40; i++)
@@ -14,15 +21,45 @@ namespace Tiltan_CS_Adv_Assignment_Berzerkers
                 var randomValue = RandomChanceChecker.GetRandomInteger(21, 1);
                 deck.InjectValue(randomValue, i);
             }
-            
-            deck.PrintDeck();
-            
-            deck.Shuffle();
-            Console.WriteLine("Deck has been shuffled?");
-            
-            deck.PrintDeck();
 
-            // StartNewWar();
+            int c;
+
+            deck.TryDraw(out c);
+            Console.WriteLine(c);
+            
+            deck.TryDraw(out c);
+            Console.WriteLine(c);
+            
+            deck.TryDraw(out c);
+            Console.WriteLine(c);
+            deck.TryDraw(out c);
+            Console.WriteLine(c);
+            deck.TryDraw(out c);
+            Console.WriteLine(c);
+            deck.TryDraw(out c);
+            Console.WriteLine(c);
+            deck.TryDraw(out c);
+            Console.WriteLine(c);
+            deck.TryDraw(out c);
+            Console.WriteLine(c);
+            deck.TryDraw(out c);
+            Console.WriteLine(c);
+            deck.TryDraw(out c);
+            Console.WriteLine(c);
+            deck.TryDraw(out c);
+            Console.WriteLine(c);
+            deck.TryDraw(out c);
+            Console.WriteLine(c);
+            
+            Console.WriteLine("Finished drawing");
+            
+            deck.PrintDeck();
+            
+            deck.ReShuffle();
+            
+            Console.WriteLine("Deck has been reshuffled");
+            
+            deck.PrintDeck();
         }
 
         private static void StartNewWar()

@@ -111,20 +111,18 @@ public class Dice<T> where T : IComparable<T>
 public class Deck<T> where T : struct, IComparable<T>
 {
     private List<T> _availableCards;
-    private List<T> _discardedCards = new();
+    private readonly List<T> _discardedCards = new();
+    private int DeckSize { get; }
     public Deck(int size)
     {
+        DeckSize = size;
+        
         _availableCards = new List<T>();
 
         for (var i = 0; i < size; i++)
         {
             _availableCards.Add(new T());
         }
-    }
-    
-    public Deck(List<T> cards)
-    {
-        _availableCards = cards;
     }
     
     public void InjectValue(T val, int index)
@@ -135,6 +133,24 @@ public class Deck<T> where T : struct, IComparable<T>
         }
         
         _availableCards[index] = val;
+    }
+
+    public bool TryDraw(out T card)
+    {
+        if (_discardedCards.Count == 0 && _availableCards.Count == 0)
+        {
+            card = default;
+            return false;
+        }
+
+        if (_availableCards.Count == 0)
+        {
+            ReShuffle();
+            Console.WriteLine("Deck was reshuffled as it was empty.");
+        }
+
+        card = DrawFromTop();
+        return true;
     }
 
     public void Shuffle()
@@ -159,11 +175,47 @@ public class Deck<T> where T : struct, IComparable<T>
         _availableCards = shuffledList;
     }
 
+    public T Peek()
+    {
+        if (_availableCards.Count != 0) return _availableCards[0];
+        
+        Console.WriteLine("Deck is currently empty. Have you tried reshuffling? Default value will be returned by Peek.");
+        return default;
+    }
+
+    public int Size() => DeckSize;
+
+    public int Remaining() => _availableCards.Count;
+    
     public void PrintDeck()
     {
         foreach (var card in _availableCards)
         {
             Console.WriteLine(card.ToString());
         }
+    }
+    public void ReShuffle()
+    {
+        if (_discardedCards.Count == 0)
+        {
+            return;
+        }
+        
+        foreach (var discardedCard in _discardedCards)
+        {
+            _availableCards.Add(discardedCard);
+        }
+        _discardedCards.Clear();
+        
+        Shuffle();
+    }
+    
+    private T DrawFromTop()
+    {
+        var card = _availableCards[0];
+        _availableCards.RemoveAt(0);
+        _discardedCards.Add(card);
+
+        return card;
     }
 }
